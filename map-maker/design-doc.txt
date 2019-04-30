@@ -1,0 +1,293 @@
+NOTE: conveted from google doc to plain text. Needs to be rewritten as markdown
+NOTE 2: Was an early document and hasn't been looked at in a while. Doesn't have my more recent syntax and might not be totally accurate.
+
+A, B, C, D - intermediate values
+
+
+J - map node pos list
+K - map node size list
+L - world icon for current index
+
+
+M - edit map node pos
+N - edit map node size
+O - edit map node index
+P - edit node effect
+Q - adjustment size
+R - Adjustment delta
+
+
+S - map node effects
+
+
+T - mode quit
+
+
+W - facing display
+
+
+X - next index
+
+
+Y - Prev state
+Z - State
+
+
+
+
+State 0 - initialization
+
+
+J - [(0,0,0)]
+K - [3]
+L <= []
+S - [null]
+
+
+M - (0,0,0)
+N - 3
+O - 0
+
+
+goto state 1
+
+
+State 1 - create hud texts
+
+
+Create checkpoint place text
+Create x edit text
+Create y edit text
+Create z edit text
+Create size edit text
+Create index edit text
+
+
+Create world icon for current index
+
+
+Create “NEW” text
+
+
+Goto state 2
+
+
+state 2 - create node display 0 through 9
+Do the thing, however many times and rules
+Final - goto state 10
+
+
+State 10 - Set up edit effect
+
+
+create effect:
+pos - M
+size - N
+vis - all
+update - pos and size
+
+
+P = last created effect
+goto state 20 - edit effect set position
+
+
+state 20 and primary fire - move effect
+M = pos of( event player )
+Y = 20
+goto state 90
+
+
+state 20 and interact - switch to detail edit mode
+R = (1,0,0)
+goto state 30
+
+
+state >= 30 and state <= 32 and primary fire - add vector delta
+M += R * Q
+Y = Z
+wait .25
+goto state 90
+
+
+state >= 30 and state <= 32 and secondary fire - subtract vector delta
+M -= R * Q
+Y = Z
+wait .25
+goto state 90
+
+
+state is 33 and primary fire - increase size
+N += .1
+Y = Z
+wait .25
+goto state 90
+
+
+state is 33 and primary fire - decrease size
+N -= .1
+Y = Z
+wait .25
+goto state 90
+
+
+state is 30 and first skill - change to Y detail edit mode
+R = (0,1,0) 
+Y <= 31
+goto state 91
+
+
+state is 31 and first skill - change to Z detail edit mode
+R = (0,0,1)
+Y <= 33
+goto state 91
+
+
+state is 32 and first skill - change to size detail edit mode
+Y <= 33
+goto state 91
+
+
+state is 33 and first skill - change to X detail edit mode
+R = (1,0,0)
+Y <= 30
+goto state 91
+
+
+state is >=30 and state <= 33 and interact - change to place mode
+goto state 21
+
+
+state is >= 20 and sate <= 39 and ultimate - go to index change mode
+goto state 41
+
+
+
+
+State 41 - put edit node into list
+do the things to put edit node into display list as generic white sqhere
+delete edit effect
+Goto state 40
+
+
+state 40 and primary fire - increase index
+abort if O = count of (S)
+O+=1
+
+
+state 40 and secondary fire - decrease index
+abort if O = 0
+O-=1
+
+
+state 40 and ultimate  and O < count of (S) - goto edit existing node
+Y <= 43
+Z <= 91
+
+
+state 40 and ultimate  and O == count of (S) - goto append node
+Y <= 44
+Z <= 91
+
+
+state 40 and interact and O < (count of (S)-1)- goto insert node
+O += 1
+Y <= 45
+Z <= 91
+
+
+state 40 and interact and O >= (count of (S)-1) - goto append node
+O <= count of (S)
+Y <= 44
+Z <= 91
+
+
+state 40 and ability 1 and O < count of (S) - goto delete node
+Y <= 46
+Z <= 91
+
+
+State 43 - edit existing node
+delete effect S[O]
+S[O] <= null
+M = J[O]
+N - K[O]
+goto state 10
+
+
+State 44 - append node at end
+append null to S
+append (0,0,0) to J
+append 3 to K
+M - (0,0,0)
+N - 3
+goto state 10
+
+
+State 45 - insert node at index
+M - (0,0,0)
+N - 3
+A <= Slice(J,0,O)
+B <= slice(K,0,O)
+C <= slice(S,0,O)
+Append A <= (0,0,0)
+Append B <= 3
+Append C <= null
+Append A <= J[O:]
+Append B <= K[O:]
+Append C <= S[O:]
+J <= A
+K <= B
+S <= C
+Goto state 10
+
+
+State 46 - delete node at index
+[delete node stuff]
+Destroy S[O]
+A <= Slice(J,0,O)
+B <= slice(K,0,O)
+C <= slice(S,0,O)
+Append A <= J[O+1:]
+Append B <= K[O+1:]
+Append C <= S[O+1:]
+J <= A
+K <= B
+S <= C
+Goto state 40
+
+
+State 50 - start build world text display
+A <= J
+Goto state 51
+
+
+State 51 and work remains - build world text
+Cond: size of(A) > 0
+
+
+State 51 and work finished - finish building word text
+Goto state 40
+
+
+State 55 and text remains - clean up world text display
+Clean text
+
+
+State 55 and no text remains- finish world text clean
+Goto state Y
+
+
+append null to S
+append (0,0,0) to J
+append 3 to K
+M - (0,0,0)
+N - 3
+goto state 10
+
+
+
+
+state 91 - release all the buttons state
+Cond: all buttons i'm checking == false
+state = Y
+
