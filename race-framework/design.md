@@ -22,15 +22,9 @@
 	    1: Team const - which team to teleport
 	    2: Number of capture points
 	    3: Number of payload checkpoints
-	    4: Enable ability 1?
-	    5: Enable ability 2?
-	    6: Enable primary fire?
-	    7: Enable secondary fire?
-	    8: Enable crouch?
-	    9: Enable Jump?
-	    10: Floor is lava mode?
-	    11: Number of ground touches allowed
-	    12: Ground time allowed
+	    4: Floor is lava mode?
+	    5: Number of ground touches allowed
+	    6: Ground time allowed
     ]
     
     E-H - intermediate values
@@ -433,7 +427,6 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Respawn(ep)
     P <= 999
     X <= 0
-    Disallow button(ep, ability 1)
     Set status(ep,invincible,9999)
     Stop forcing throttle(ep)
     
@@ -463,15 +456,13 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     State <= 20
     
-**Player state 20 and ability 1 pressed - Initialize race**
+**Player state 20 and interact pressed - Initialize race**
 
-    Cond: button held(event playser, ability 1) == true
-    Cond: button held(event playser, ability 2) == false
-    Cond: button held(event playser, secondary fire) == false
-    Cond: button held(event playser, crouch) == false
+    Cond: button held(event playser, interact) == true
     
-    disable(event player, all buttons)
     throttle(event player, stop)
+    apply status(ep, stun, 9999)
+    wait .25
     State <= 21 //start spawn in process
     
 **Player state 20 and left spawn - Return player to gather point**
@@ -482,7 +473,8 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     State <= 15
     
-    Player state 21 - Wait for player to stop
+**Player state 21 - Wait for player to stop**
+
     Cond: speed of(ep) < 0.2
     
     State <= 22
@@ -501,8 +493,8 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Big message(1)
     Wait(A)
     
-    {Enable buttons based on gD[4-9]}
-    Clear status(Event player, invincible)
+    Clear status(ep, stun)
+    Clear status(ep, invincible)
     
     Stop throttle(event player)
     Big message ("Go!")
