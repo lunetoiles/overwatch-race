@@ -7,24 +7,24 @@
     B - checkpoint sizes
     
     C - spawn room settings [
-		0: Race start facing
-	    1: gather point
-	    2: gather point size
-	    3: gather spawn facing
-	    4: Leaderboard position
-	    5: Leaderboard scale
-	    6: poll option 1 position
-	    7: poll option 2 position
-	    8: Code in progress indicator position
+        0: Race start facing
+        1: gather point
+        2: gather point size
+        3: gather spawn facing
+        4: Leaderboard position
+        5: Leaderboard scale
+        6: poll option 1 position
+        7: poll option 2 position
+        8: moderator spot
     ]
     D - misc settings [
-	    0: Checkpoint distance adjustment
-	    1: Team const - which team to teleport
-	    2: Number of capture points
-	    3: Number of payload checkpoints
-	    4: Floor is lava mode?
-	    5: Number of ground touches allowed
-	    6: Ground time allowed
+        0: Checkpoint distance adjustment
+        1: Team const - which team to teleport
+        2: Number of capture points
+        3: Number of payload checkpoints
+        4: Floor is lava mode?
+        5: Number of ground touches allowed
+        6: Ground time allowed
     ]
     
     E-H - intermediate values
@@ -363,6 +363,17 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Create start instructions on top - sort 11
     Visible to: Filtered array(Event player, current:state == 20 )
     
+**Player state 1 - hud creation extra - moderator hud**
+
+Rule type: Ongoing - Each player, team 2, slot 1
+
+    Create hud text (
+        Text: "Mode: {A}" //If I can make it something like "command" or something better do
+        sort: 12
+        visible to: filtered array(even player, cu:state == 70)
+        Location: top
+    )
+    
 **Player state 2 - hud creation part 2 - Statistics**
 
     
@@ -473,6 +484,15 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     State <= 15
     
+**Player state 20 and in moderator spot - Start moderator mode**
+
+Rule type: Ongoing - each player, team 2, slot 1
+
+    Cond: distance between( position of(ep), gC[8]) < 1.5 
+    
+    A <= 1
+    State <= 70
+    
 **Player state 21 - Wait for player to stop**
 
     Cond: speed of(ep) < 0.2
@@ -560,6 +580,32 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     State <= 90
     
+**Player state 70 and primary fire - increase moderator action index**
+
+    Cond: A < {total number of moderator actions}
+    Cond: is pressed(ep,primary fire) == true
+    
+    A += 1
+    
+**Player state 70 and secondary fire - decrease moderator action index**
+
+    Cond: A > 1
+    Cond: is pressed(ep,secondary fire) == true
+    
+    A -= 1
+    
+**Player state 70 and interact - run moderator action**
+
+    Cond: is pressed(ep,interact) == true
+    
+    State <= 100 + (A-1)
+    
+**Player state 70 and leave moderator spot - go back to wait mode**
+
+    Cond: distance between( position of(ep), gC[8]) > 1.5
+    
+    State <= 20
+    
     
 **Player state 90 - Start reset sequence**
 
@@ -570,4 +616,19 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Wait 1 //wait during reset, adjust for feel
     
     State <= 10
+    
+    
+**Player state 100 - test moderator action 1**
+
+    small message("Hello 1")
+    wait 1
+    state <= 20
+
+**Player state 101 - test moderator action 2**
+
+    small message("Hello 2")
+    wait 1
+    state <= 20
+    
+    
 
