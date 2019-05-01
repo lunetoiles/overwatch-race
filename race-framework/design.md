@@ -58,7 +58,7 @@
     I
     J
     K
-    L - Secret code lock state
+    L
     M
     N
     O
