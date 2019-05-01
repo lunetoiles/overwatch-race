@@ -2,12 +2,13 @@
 name: Bug report
 about: For bugs experienced in maps based on this framework
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
 
 **Describe the bug**
+
 Please describe the bug as detailed as possible. The following information is useful:
 
 - Which team you where on
