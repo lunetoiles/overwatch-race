@@ -108,7 +108,7 @@ Rule type: Ongoing - Each Player
 Rule type: Ongoing - Global
 
     Cond: Y == true //init complete
-    Cond: Q == false //donÅft run during debug to keep inspector clean
+    Cond: Q == false //don't run during debug to keep inspector clean
 
     E <= filtered array(
 	    Array: all players
@@ -127,7 +127,7 @@ Rule type: Ongoing - Global
 Rule type: Ongoing - Each Player
 
     Cond: Has status(ep, phased out) == false
-    Cond: Q == false //donÅft run during debug to keep inspector clean
+    Cond: Q == false //don't run during debug to keep inspector clean
     
     Apply status( Event playser, phased out, 999)
 
@@ -180,9 +180,9 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     E <= D[2] //number of capture points
     F <= D[3] //number of payload checkpoints
     
-    Create hud text ÅgUNLOCKING CHECKPOINT AND PAYLOADÅh
+    Create hud text "UNLOCKING CHECKPOINT AND PAYLOAD"
     G <= last text id
-    Create hud text ÅgFIND TEAM 2 PLAYERSÅh text visible when no one on team 2
+    Create hud text "FIND TEAM 2 PLAYERS" text visible when no one on team 2
     H <= last text id
     
     Set match time(0)
@@ -240,7 +240,7 @@ Rule type: Ongoing - Each Player
     W <= 999 //starting best time
     Pause match time
     Set match time 11:11 (671 seconds)
-    Set objective description (Åggo fast!Åh)
+    Set objective description ("go fast!")
     
     State <= 20
     
@@ -255,7 +255,7 @@ Rule type: Ongoing - Each Player
     
     Create in-World text(
     	Visible to: All
-    	Text: ÅgLeadersÅh
+    	Text: "Leaders"
     	Position: E
     	Scale: {Leaders text size} * I
     	Clipping: Yes
@@ -264,7 +264,7 @@ Rule type: Ongoing - Each Player
     E += (down * F)
     Create in-World text(
     	Visible to: All
-    	Text: Åg-------------Åh
+    	Text: "-------------"
     	Position: E
     	Scale: {dash text size} * I
     	Clipping: Yes
@@ -280,7 +280,7 @@ Rule type: Ongoing - Each Player
     (repeat x5)
     Create in-world text(
     	Visible to: filtered array ( All Players, L[{index}]:W != 0)
-    	Text: Åg{L[{index}]} - {L{index}]:W} SecÅh
+    	Text: "{L[{index}]} - {L{index}]:W} Sec"
     	Position: E
     	Scale: H
     	Clipping: Yes
@@ -341,7 +341,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
 
     Cond: gY == true //global init complete
     
-    Disable built in mode respawning(event player) //this doesnÅft even work
+    Disable built in mode respawning(event player) //this doesn¬Åft even work
     Set respawn max time(ep, 99) //long respawn
     Start forcing throttle(ep, stop) //stop player during init
     Disallow button(ep, ultimate) //disallow ultimate
@@ -382,7 +382,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
 **Player state 3 - hud creation part 3 - Fastest times**
 
     
-    Create Åg-------Åh text - sort -2
+    Create "-------" text - sort -2
     Create fastest times text - sort -1
     
     (repeat x5)
@@ -393,8 +393,8 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
 **Player state 4 - hud creation part 4 - Latest times**
 
     
-    Create Åg-------Åh text - sort 8
-    Create ÅgtimesÅh text - sort 9
+    Create "-------" text - sort 8
+    Create "times" text - sort 9
     (repeat x5)
     Create 1st most recent completion time - sort 10-14
     
@@ -478,7 +478,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
 
     Cond: Team of(event player) != D[1] //player not in teleport group and spawn doors open
     Cond: In spawn(event player) == false
-    Cond: gQ == false // donÅft force it in debug
+    Cond: gQ == false // don't force it in debug
     
     State <= 15
     
@@ -505,7 +505,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Clear status(Event player, invincible)
     
     Stop throttle(event player)
-    Big message (ÅgGo!Åh)
+    Big message ("Go!")
     
     X <= 0
     Chase player variable(ep, X, 999, 1) // start race timer
@@ -538,7 +538,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     	State <= 51
     	Abort
     }
-    Small message(ÅgTime - {X} SecÅh)
+    Small message("Time - {X} Sec")
     State <= 60
     
 **Player state 51- Update records**
@@ -547,11 +547,11 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     W <= X //update personal best
     Skip if ( W >= gW ) { //skip if not new server record
     	gW <= W
-    	Create big message (ÅgNew High Score: {event player} - {W} SecÅh)
+    	Create big message ("New High Score: {event player} - {W} Sec")
     	State <= 60
     	Abort
     }
-    Create small message (Åg{event player} new record - {W} SecÅh)
+    Create small message "g{event player} new record - {W} Sec")
     State <= 60
     
 **Player state 60 - Update stats and end race**
