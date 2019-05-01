@@ -3,6 +3,7 @@
 This file describes the syntax for Overwatch workshop rules used in this project. As all these documents must be manually re-written in the Overwatch interface it is not a completely formal language. It is designed around making writing rules easy, not around looking exactly like the actual result inside Overwatch.
 
 `gA` - Global variable A
+
 `{value}:A` - Player variable A etc belonging to player `{value}`. 
  
 
