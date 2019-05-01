@@ -38,7 +38,7 @@
     O
     P - code table (P for puzzle)
     Q - Debug
-    R
+    R - Enable/disable debug hud
     S
     T
     U
@@ -232,6 +232,7 @@ Rule type: Ongoing - Each Player
     
     L <= [] //empty leaderboard
     W <= 999 //starting best time
+    R <= Q //default debug hud toggle to debug state
     Pause match time
     Set match time 11:11 (671 seconds)
     Set objective description ("go fast!")
@@ -428,9 +429,9 @@ Rule type: Ongoing - Each player, team 2, slot 1
     
 **Player state 9 - Debug hud creation**
 
-    State <= 10
-    Abort if (gQ==false) //only make if in debug mode
-    [Do the stuff]
+
+    [Make the debug hud with the following visable do condition]
+    Filtered array (event player, gR == true)
     
 **Player state 10 - Spawn player and prep waiting state**
 
@@ -582,7 +583,7 @@ Rule type: Ongoing - each player, team 2, slot 1
     
 **Player state 70 and primary fire - increase moderator action index**
 
-    Cond: A < {total number of moderator actions}
+    Cond: A < {total number of moderator actions} //currently 3 total
     Cond: is pressed(ep,primary fire) == true
     
     A += 1
@@ -620,15 +621,19 @@ Rule type: Ongoing - each player, team 2, slot 1
     
 **Player state 100 - test moderator action 1**
 
-    small message("Hello 1")
+    small message("something useful or interesting or funny")
     wait 1
     state <= 20
 
 **Player state 101 - test moderator action 2**
 
-    small message("Hello 2")
+    small message("Something useful or interesting or funny 2")
     wait 1
     state <= 20
     
-    
+**Player state 101 - test moderator action 2**
+
+    gR <= not( gR ) //toggle debug text
+    wait 1
+    state <= 20
 
