@@ -9,6 +9,7 @@ This repository hosts a framework and associated tools for creating Overwatch mu
     Test map: YJ9E6
     Eichenwalde: VRGJP
     Junkertown: WFGP5
+    Hanamura: JKW3A
 
 ### Map Maker
 
