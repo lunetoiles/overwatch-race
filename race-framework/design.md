@@ -250,9 +250,9 @@ Rule type: Ongoing - Each Player
     
     Create in-World text(
     	Visible to: All
-    	Text: "Leaders"
+    	Text: "High Scores"
     	Position: E
-    	Scale: {Leaders text size} * I
+    	Scale: {high scores text size} * I
     	Clipping: Yes
     	Reevaluation: Visible to and String
     )
@@ -365,18 +365,14 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Visible to: Filtered array(Event player, current:state == 20 )
     
     Create second display on top - sort 10
-    
-    
-**Player state 1 - hud creation extra - moderator hud**
-
-Rule type: Ongoing - Each player, team 2, slot 1
 
     Create hud text (
-        Text: "Mode: {A}" //If I can make it something like "command" or something better do
+        Text: "Moderate -> {A}"
         sort: 12
-        visible to: filtered array(even player, cu:state == 70)
+        visible to: filtered array(ep, cu:state == 70)
         Location: top
     )
+    
     
 **Player state 2 - hud creation part 2 - Statistics**
 
@@ -434,7 +430,7 @@ Rule type: Ongoing - Each player, team 2, slot 1
 
 
     [Make the debug hud with the following visable do condition]
-    Filtered array (event player, gR == true)
+    Filtered array (event player, gR)
     
 **Player state 10 - Spawn player and prep waiting state**
 
@@ -488,20 +484,22 @@ Rule type: Ongoing - Each player, team 2, slot 1
     
     State <= 15
     
-**Player state 20 and in moderator spot - Start moderator mode**
+**player state 20 and in operator spot - start operator mode**
 
 Rule type: Ongoing - each player, team 2, slot 1
 
-    Cond: distance between( position of(ep), gC[8]) < 1.5 
+    Cond: distance between( position of(ep), gC[8]) < 3 
     
+    wait 3 abort
     A <= 1
     State <= 70
 
 **Player state 20 - More forcefully teach how to start race**
 
     Cond: Q <= 3 //stop displaying message once the player has figured out how to start a couple times
+    Cond: gQ == false //don't show it in debug mode to avoide cluttering event window
     
-    wait 15 abort
+    wait 5 abort
     small message("Use ultimate ability = start race")
     loop if true
     
@@ -592,29 +590,29 @@ Rule type: Ongoing - each player, team 2, slot 1
     
     State <= 90
     
-**Player state 70 and primary fire - increase moderator action index**
+**Player state 70 and primary fire - increase operator action index**
 
-    Cond: A < {total number of moderator actions} //currently 3 total
+    Cond: A < {total number of moderator actions} //currently 2
     Cond: is pressed(ep,primary fire) == true
     
     A += 1
     
-**Player state 70 and secondary fire - decrease moderator action index**
+**Player state 70 and secondary fire - decrease operator action index**
 
     Cond: A > 1
     Cond: is pressed(ep,secondary fire) == true
     
     A -= 1
     
-**Player state 70 and interact - run moderator action**
+**Player state 70 and interact - run opterator action for index**
 
     Cond: is pressed(ep,interact) == true
     
-    State <= 100 + (A-1)
+    State <= 100 + A
     
-**Player state 70 and leave moderator spot - go back to wait mode**
+**Player state 70 and leave operator spot - go back to wait mode**
 
-    Cond: distance between( position of(ep), gC[8]) > 1.5
+    Cond: distance between( position of(ep), gC[8]) > 3
     
     State <= 20
     
@@ -630,21 +628,19 @@ Rule type: Ongoing - each player, team 2, slot 1
     State <= 10
     
     
-**Player state 100 - test moderator action 1**
+**player state 101 - operator action 1 - greet server**
 
-    small message("something useful or interesting or funny")
-    wait 1
-    state <= 20
-
-**Player state 101 - test moderator action 2**
-
-    small message("Something useful or interesting or funny 2")
-    wait 1
-    state <= 20
+    Cond: is button held(ep, interact) == false
     
-**Player state 101 - test moderator action 2**
+    small message("Hello players! Thanks 4 joining!")
+    wait 1
+    state <= 20
+
+    
+**player state 102 - operator action 2 - toggle debug hud**
+
+    wCond: is button held(ep, interact) == false
 
     gR <= not( gR ) //toggle debug text
-    wait 1
     state <= 20
 
