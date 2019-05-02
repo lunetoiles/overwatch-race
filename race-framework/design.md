@@ -77,12 +77,14 @@
 ## Miscellaneous rules
 
 **Keep goal index updated**
+
 Rule type: Ongoing - Global
 
     Cond: N != Count of(A) - 1
     N <= count of(A) -1
 
 **Player killed event - Reset match**
+
 Rule type: Player Died
 
     State <= 90
@@ -90,6 +92,7 @@ Rule type: Player Died
   
 
 **Ultimate pressed - quick reset**
+
 Rule type: Ongoing - Each Player
 
     Cond: State >= 30
@@ -99,6 +102,7 @@ Rule type: Ongoing - Each Player
     Kill(ep)
 
 **Rebuild Leaderboard loop**
+
 Rule type: Ongoing - Global
 
     Cond: Y == true //init complete
@@ -124,6 +128,7 @@ Rule type: Ongoing - Global
   
 
 **Make players phase**
+
 Rule type: Ongoing - Each Player
 
     Cond: Has status(ep, phased out) == false
@@ -132,6 +137,7 @@ Rule type: Ongoing - Each Player
     Apply status( Event playser, phased out, 999)
 
 ## Global State Machine:
+
 All below rules are of rule type "Ongoing - Global" unless otherwise noted.
 
 All below rules have an implied condition of `"gZ == {state in rule name}"`
@@ -195,6 +201,7 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     State <= 15 // unlocking state
     
 **Global state 15 - Freeze players**
+
 Rule type: Ongoing - Each Player
 
     Cond: Has status(Even player, frozen) == false
@@ -212,6 +219,7 @@ Rule type: Ongoing - Each Player
     Loop if true
     
 **Global state 15 and payload checkpoints remain - advance payload**
+
 Rule type: Ongoing - Each Player
 
     Team 2 players
