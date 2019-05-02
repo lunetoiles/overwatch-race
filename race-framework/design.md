@@ -7,30 +7,24 @@
     B - checkpoint sizes
     
     C - spawn room settings [
-		0: Race start facing
-	    1: gather point
-	    2: gather point size
-	    3: gather spawn facing
-	    4: Leaderboard position
-	    5: Leaderboard scale
-	    6: poll option 1 position
-	    7: poll option 2 position
-	    8: Code in progress indicator position
+        0: Race start facing
+        1: gather point
+        2: gather point size
+        3: gather spawn facing
+        4: Leaderboard position
+        5: Leaderboard scale
+        6: poll option 1 position
+        7: poll option 2 position
+        8: moderator spot
     ]
     D - misc settings [
-	    0: Checkpoint distance adjustment
-	    1: Team const - which team to teleport
-	    2: Number of capture points
-	    3: Number of payload checkpoints
-	    4: Enable ability 1?
-	    5: Enable ability 2?
-	    6: Enable primary fire?
-	    7: Enable secondary fire?
-	    8: Enable crouch?
-	    9: Enable Jump?
-	    10: Floor is lava mode?
-	    11: Number of ground touches allowed
-	    12: Ground time allowed
+        0: Checkpoint distance adjustment
+        1: Team const - which team to teleport
+        2: Number of capture points
+        3: Number of payload checkpoints
+        4: Floor is lava mode?
+        5: Number of ground touches allowed
+        6: Ground time allowed
     ]
     
     E-H - intermediate values
@@ -44,7 +38,7 @@
     O
     P - code table (P for puzzle)
     Q - Debug
-    R
+    R - Enable/disable debug hud
     S
     T
     U
@@ -64,7 +58,7 @@
     I
     J
     K
-    L - Secret code lock state
+    L
     M
     N
     O
@@ -238,6 +232,7 @@ Rule type: Ongoing - Each Player
     
     L <= [] //empty leaderboard
     W <= 999 //starting best time
+    R <= Q //default debug hud toggle to debug state
     Pause match time
     Set match time 11:11 (671 seconds)
     Set objective description ("go fast!")
@@ -255,9 +250,9 @@ Rule type: Ongoing - Each Player
     
     Create in-World text(
     	Visible to: All
-    	Text: "Leaders"
+    	Text: "High Scores"
     	Position: E
-    	Scale: {Leaders text size} * I
+    	Scale: {high scores text size} * I
     	Clipping: Yes
     	Reevaluation: Visible to and String
     )
@@ -364,10 +359,20 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
 
     
     Create reset instructions on top - sort 9
-    Create second display on top - sort 10
-    
-    Create start instructions on top - sort 11
+    Visible to: Filtered array(Event player, current:state != 20 )
+
+    Create start instructions on top - sort 9
     Visible to: Filtered array(Event player, current:state == 20 )
+    
+    Create second display on top - sort 10
+
+    Create hud text (
+        Text: "Moderate -> {A}"
+        sort: 12
+        visible to: filtered array(ep, cu:state == 70)
+        Location: top
+    )
+    
     
 **Player state 2 - hud creation part 2 - Statistics**
 
@@ -423,9 +428,9 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
 **Player state 9 - Debug hud creation**
 
-    State <= 10
-    Abort if (gQ==false) //only make if in debug mode
-    [Do the stuff]
+
+    [Make the debug hud with the following visable do condition]
+    Filtered array (event player, gR)
     
 **Player state 10 - Spawn player and prep waiting state**
 
@@ -433,7 +438,6 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Respawn(ep)
     P <= 999
     X <= 0
-    Disallow button(ep, ability 1)
     Set status(ep,invincible,9999)
     Stop forcing throttle(ep)
     
@@ -463,15 +467,13 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     State <= 20
     
-**Player state 20 and ability 1 pressed - Initialize race**
+**Player state 20 and interact pressed - Initialize race**
 
-    Cond: button held(event playser, ability 1) == true
-    Cond: button held(event playser, ability 2) == false
-    Cond: button held(event playser, secondary fire) == false
-    Cond: button held(event playser, crouch) == false
+    Cond: button held(event playser, interact) == true
     
-    disable(event player, all buttons)
     throttle(event player, stop)
+    set status(ep, root, 9999)
+    wait .25
     State <= 21 //start spawn in process
     
 **Player state 20 and left spawn - Return player to gather point**
@@ -482,7 +484,27 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     State <= 15
     
-    Player state 21 - Wait for player to stop
+**player state 20 and in operator spot - start operator mode**
+
+Rule type: Ongoing - each player, team 2, slot 1
+
+    Cond: distance between( position of(ep), gC[8]) < 3 
+    
+    wait 3 abort
+    A <= 1
+    State <= 70
+
+**Player state 20 - More forcefully teach how to start race**
+
+    Cond: Q <= 3 //stop displaying message once the player has figured out how to start a couple times
+    Cond: gQ == false //don't show it in debug mode to avoide cluttering event window
+    
+    wait 5 abort
+    small message("Use ultimate ability = start race")
+    loop if true
+    
+**Player state 21 - Wait for player to stop**
+
     Cond: speed of(ep) < 0.2
     
     State <= 22
@@ -501,8 +523,8 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Big message(1)
     Wait(A)
     
-    {Enable buttons based on gD[4-9]}
-    Clear status(Event player, invincible)
+    Clear status(ep, root)
+    Clear status(ep, invincible)
     
     Stop throttle(event player)
     Big message ("Go!")
@@ -568,6 +590,32 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     State <= 90
     
+**Player state 70 and primary fire - increase operator action index**
+
+    Cond: A < {total number of moderator actions} //currently 2
+    Cond: is pressed(ep,primary fire) == true
+    
+    A += 1
+    
+**Player state 70 and secondary fire - decrease operator action index**
+
+    Cond: A > 1
+    Cond: is pressed(ep,secondary fire) == true
+    
+    A -= 1
+    
+**Player state 70 and interact - run opterator action for index**
+
+    Cond: is pressed(ep,interact) == true
+    
+    State <= 100 + A
+    
+**Player state 70 and leave operator spot - go back to wait mode**
+
+    Cond: distance between( position of(ep), gC[8]) > 3
+    
+    State <= 20
+    
     
 **Player state 90 - Start reset sequence**
 
@@ -578,4 +626,21 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Wait 1 //wait during reset, adjust for feel
     
     State <= 10
+    
+    
+**player state 101 - operator action 1 - greet server**
+
+    Cond: is button held(ep, interact) == false
+    
+    small message("Hello players! Thanks 4 joining!")
+    wait 1
+    state <= 20
+
+    
+**player state 102 - operator action 2 - toggle debug hud**
+
+    wCond: is button held(ep, interact) == false
+
+    gR <= not( gR ) //toggle debug text
+    state <= 20
 
