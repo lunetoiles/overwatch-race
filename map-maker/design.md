@@ -36,6 +36,7 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
 All rules with a button listed in rule name have an implied condition of `is pressed(ep, {button}) == true`
 
 **State 0 - initialization**
+
 Rule type: Ongoing - global
 
     A <= [(0,0,0)]
@@ -51,6 +52,7 @@ Rule type: Ongoing - global
 
 
 **State 1 - create hud edit node text**
+
 Rule type: Ongoing - global
     
     Create hud text ( //index, position, and size display
@@ -92,6 +94,7 @@ Rule type: Ongoing - global
     state <= 2
     
 **state 2 - create node value hud**
+
 Rule type: Ongoing - global
 
     (repeat x20)
@@ -105,6 +108,7 @@ Rule type: Ongoing - global
     state <= 3
 
 **state 3 - create extra hud text**
+
 Rule type: Ongoing - global
 
     {make facing text}
@@ -113,6 +117,7 @@ Rule type: Ongoing - global
     state <= 10
 
 **state 10 - create node display**
+
 Rule type: Ongoing - global
 
     (repeat x20)
@@ -129,6 +134,7 @@ Rule type: Ongoing - global
 
 
 **State 11 - Set up edit effect**
+
 Rule type: Ongoing - global
 
     Create effect (
