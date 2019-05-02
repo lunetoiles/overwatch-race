@@ -4,9 +4,10 @@ This repository hosts a framework and associated tools for creating Overwatch mu
 
 ## Codes
 
-### maps for 0.8:
+### maps for 0.81:
 
-    Hanamura: DRVR1
+    Hanamura: BJ8EH
+    Eichenwalde: 8TAHG
     (other maps will be ported soon)
 
 ### Maps for v0.7:
