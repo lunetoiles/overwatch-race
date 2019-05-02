@@ -72,17 +72,22 @@ Rule type: Ongoing - global
     )
     create hud text (
         text: "left/right" //or as close as I can get
-        visible: filtered array( all players, state == 32 )
+        visible: filtered array( all players, state == 30 )
+        index: 11
+    )
+    create hud text (
+        text: "foreward/back" //or as close as I can get
+        visible: filtered array( all players, state == 31 )
         index: 11
     )
     create hud text (
         text: "up/down" //or as close as I can get
-        visible: filtered array( all players, state == 33 )
+        visible: filtered array( all players, state == 32 )
         index: 11
     )
     create hud text (
         text: "Size" //or as close as I can get
-        visible: filtered array( all players, state == 34 )
+        visible: filtered array( all players, state == 33 )
         index: 11
     )
     create hud text (
@@ -155,104 +160,150 @@ Rule type: Ongoing - global
     state <= 20 //edit effect set position
 
 
-**state 20 and primary fire - move effect**
+**state 20 and primary fire - place node and player**
 
+    Cond: is pressed(ep, ultimate) == false
+    
     M <= pos of( event player )
-    Y <= 20
-    state <= 91
+    A[P] <= M
 
 
 **state 20 and interact - switch to detail edit mode**
 
-    R <= Left
-    goto state 30
+    State <= 30
 
 
-**state >= 30 and state <= 32 and primary fire - add vector delta**
+**state 30 and primary fire - move node left**
 
-    M += R * Q
-    Y <= state
+    Cond: is pressed(ep,ability 1) == false
+    
+    I <= facing angle(ep)
+    J <= I * Left //get x component of facing angle
+    K <= I * Forward //get z component of facing angle
+    L <= (K,0,J) //Get right angle to facing angle
+    I <= unit vector(L) //convert to unit vecotr to make up for missing Y component
+    M += I * Q //update node position
+    A[P] <= M //save change
     wait .25
     loop if conditions true
 
+**state 30 and primary fire - move node right**
 
-**state >= 30 and state <= 32 and secondary fire - subtract vector delta**
-
-    M -= R * Q
-    Y <= state
+    Cond: is pressed(ep,ability 1) == false
+    
+    I <= facing angle(ep)
+    J <= I * Left //get x component of facing angle
+    K <= I * Forward //get z component of facing angle
+    L <= (K,0,J) //Get right angle to facing angle
+    I <= unit vector(L) //convert to unit vecotr to make up for missing Y component
+    M -= I * Q //update node position
+    A[P] <= M //save change
     wait .25
     loop if conditions true
 
+**State 30 and ability 1 - switch to forward/back edit**
 
-**state is 33 and primary fire - increase size**
+    State <= 31
 
-    N += R
-    Y <= state
+
+**state 31 and primary fire - move node foreward**
+
+    Cond: is pressed(ep,ability 1) == false
+    
+    I <= facing angle(ep)
+    J <= I * Left //get x component of facing angle
+    K <= I * Forward //get z component of facing angle
+    L <= (J,0,K) //remove y component from facing angle
+    I <= unit vector(L) //convert to unit vecotr to make up for missing Y component
+    M += I * Q //update node position
+    A[P] <= M //save change
     wait .25
     loop if conditions true
 
+**state 31 and primary fire - move node back**
 
-**state is 33 and primary fire - decrease size**
-
-    N -= R
-    Y <= state
+    Cond: is pressed(ep,ability 1) == false
+    
+    I <= facing angle(ep)
+    J <= I * Left //get x component of facing angle
+    K <= I * Forward //get z component of facing angle
+    L <= (J,0,K) //remove y component from facing angle
+    I <= unit vector(L) //convert to unit vecotr to make up for missing Y component
+    M -= I * Q //update node position
+    A[P] <= M //save change
     wait .25
     loop if conditions true
 
+**State 31 and ability 1 - switch to up/down edit**
 
-**state is 30 and ability 1 - change to Y detail edit mode**
+    State <= 32
+    
+**state 32 and primary fire - move node up**
 
-    R <= Up
-    Y <= 31
-    state <= 91
+    Cond: is pressed(ep,ability 1) == false
+    
+    M += Up * Q //modify node position
+    A[P] <= M //save change
+    wait .25
+    loop if conditions true
 
+**state 32 and primary fire - move node right**
 
-**state is 31 and ability 1 - change to Z detail edit mode**
+    Cond: is pressed(ep,ability 1) == false
+    
+    M += down * Q //modify node position
+    A[P] <= M //save change
+    wait .25
+    loop if conditions true
 
-    R <= Forward
-    Y <= 33
-    state <= 91
+**State 32 and ability 1 - switch to size edit**
 
+    State <= 33
+    
+**state 33 and primary fire - increase size**
 
-**state is 32 and ability 1 - change to size detail edit mode**
+    Cond: is pressed(ep,ability 1) == false
+    
+    N += Q //modify size
+    B[P] <= N //save change
+    wait .25
+    loop if conditions true
 
-    Y <= 33
-    state <= 91
+**state 33 and primary fire -decrease size**
 
-**state is 33 and first skill - change to X detail edit mode**
+    Cond: is pressed(ep,ability 1) == false
+    
+    N -= Q //modify size
+    B[P] <= N //save change
+    wait .25
+    loop if conditions true
 
-    R = Left
-    Y <= 30
-    state <= 91
+**State 33 and ability 1 - switch to left/right edit**
+
+    State <= 30
 
 
 **state is >=30 and state <= 33 and interact - change to place mode**
 
-    state <= 21
+    state <= 20
 
 **state is >= 20 and sate <= 39 and ultimate - go to index change mode**
 
-    state <= 41
-
-
-
-**State 41 - put edit node into list**
-
-    do the things to put edit node into display list as generic white sqhere
-    delete edit effect
     state <= 40
 
 
 **state 40 and primary fire - increase index**
 
-    abort if O = count of (S)
-    O+=1
+    Cond: P < count of(A)
+    
+    P += 1
 
 
 **state 40 and secondary fire - decrease index**
 
-    abort if O = 0
-    O-=1
+    Cond: P > 0
+    
+    P -= 1
 
 
 **state 40 and ultimate  and O < count of (S) - goto edit existing node**
