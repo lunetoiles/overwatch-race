@@ -33,7 +33,7 @@
     J
     K
     L - Leaderboard
-    M
+    M - is top score disconnected?
     N - finish line checkpoint index
     O
     P - code table (P for puzzle)
@@ -104,15 +104,20 @@ Rule type: Ongoing - Global
     Cond: Y == true //init complete
     Cond: Q == false //don't run during debug to keep inspector clean
 
+    M <= false
+    skip if (true for any( all players, cu:W != 0 && cu:W <= W) ) {
+        append M <= true //if best time doesn't belong to any player, set the flag
+    }
+    
     E <= filtered array(
-	    Array: all players
-	    Condition: current:W != 0 && current:W != 999
+        Array: all players
+        Condition: current:W != 0 && current:W != 999
     )
-    L <= sorted array(
-	    Array: E
-	    Sort value: current:W
+    append L <= sorted array(
+        Array: E
+        Sort value: current:W
     )
-    Wait 5
+    wait 5
     Loop
 
   
@@ -272,7 +277,25 @@ Rule type: Ongoing - Each Player
 **Global state 21 - Leaderboard set up part 2**
 
     
-    (repeat x5)
+    //create two versions of the first entry. One normal, and one if the top score has left the game
+    Create in-world text( //normal version
+        Visible to: filtered array ( All Players, !M && L[0]:W != 0)
+        Text: "{L[{index}]} - {L{index}]:W} Sec"
+        Position: E
+        Scale: H
+        Clipping: Yes
+        Reevaluation: Visible to and string
+    )
+    Create in-world text( //disconcted best score version
+        Visible to: filtered array ( All Players, M)
+        Text: "Disconnected player - {W} Sec"
+        Position: E
+        Scale: H
+        Clipping: Yes
+        Reevaluation: Visible to and string
+    )
+    E <= E + (down * G)
+    (repeat 1 to 4)
     Create in-world text(
     	Visible to: filtered array ( All Players, L[{index}]:W != 0)
     	Text: "{L[{index}]} - {L{index}]:W} Sec"
@@ -281,8 +304,7 @@ Rule type: Ongoing - Each Player
     	Clipping: Yes
     	Reevaluation: Visible to and string
     )	
-    E <= E + (down * G)
-    
+    E <= E + (down * G)    
     State <= 30
     
 **Global state 30 - Create finish checkpoint and icon**
@@ -390,8 +412,8 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Create "-------" text - sort -2
     Create fastest times text - sort -1
     
-    (repeat x5)
-    Create 1st fastest time text - sort 0-4
+    (repeat x4)
+    Create 1st fastest time text - sort 0-3
     
     State <= 4
     
@@ -400,8 +422,8 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     Create "-------" text - sort 8
     Create "times" text - sort 9
-    (repeat x5)
-    Create 1st most recent completion time - sort 10-14
+    (repeat x4)
+    Create 1st most recent completion time - sort 10-13
     
     State <= 5
     
@@ -639,8 +661,14 @@ Rule type: Ongoing - each player, team 2, slot 1
     
 **player state 102 - operator action 2 - toggle debug hud**
 
-    wCond: is button held(ep, interact) == false
+    Cond: is button held(ep, interact) == false
 
     gR <= not( gR ) //toggle debug text
     state <= 20
+    
+**player state 103 - operator action 3 - set debug high score**
 
+    Cond: is button held(ep, interact) == false
+
+    gW <= 10
+    state <= 20
