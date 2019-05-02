@@ -103,11 +103,6 @@ Rule type: Ongoing - Global
 
     Cond: Y == true //init complete
     Cond: Q == false //don't run during debug to keep inspector clean
-
-    M <= false
-    skip if (true for any( all players, cu:W != 0 && cu:W <= W) ) {
-        append M <= true //if best time doesn't belong to any player, set the flag
-    }
     
     E <= filtered array(
         Array: all players
@@ -117,6 +112,12 @@ Rule type: Ongoing - Global
         Array: E
         Sort value: current:W
     )
+    M <= false
+    skip if (true for any( all players, cu:W != 0 && cu:W <= W) ) {
+        M <= true //if best time doesn't belong to any player, set the flag
+        E <= L
+        L <= append(null, E) //add a blank first entry for disconnected player
+    }
     wait 5
     Loop
 
