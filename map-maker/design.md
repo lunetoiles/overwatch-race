@@ -7,21 +7,20 @@ Design document for the map editor. Also useful as an editor for placing nodes f
 
 ## Global Variable Definitions
 
-    A, B, C, D - intermediate values
+    A - map node position list
+    B - map node size list
     
-    J - map node pos list
-    K - map node size list
-    L - world icon for current index
+    I,J,K,L - intermediate values
+
     M - edit map node pos
     N - edit map node size
-    O - edit map node index
-    P - edit node effect
+    
+    P - edit map node index
+
     Q - adjustment size
-    R - Adjustment delta
-    S - map node effects
-    T - mode quit
+    
     W - facing display
-    X - next index
+
     Y - Prev state
     Z - State
 
@@ -39,52 +38,114 @@ All rules with a button listed in rule name have an implied condition of `is pre
 **State 0 - initialization**
 Rule type: Ongoing - global
 
-    J <= [(0,0,0)]
-    K <= [3]
-    L <= []
-    S <= [null]
+    A <= [(0,0,0)]
+    B <= [3]
     
     M <= (0,0,0)
     N <= 3
-    O <= 0
+    P <= 0
+    
+    Q <= 1
     
     state <= 1
 
 
-**State 1 - create hud texts**
+**State 1 - create hud edit node text**
 Rule type: Ongoing - global
-
-
-    Create checkpoint place text
-    Create x edit text
-    Create y edit text
-    Create z edit text
-    Create size edit text
-    Create index edit text
-    Create world icon for current index
-    Create “NEW” text
+    
+    Create hud text ( //index, position, and size display
+        text: "#{P}: {M}, {N}
+        visible: filtered array( all players, O < count of(M) )
+        index: 10
+    )
+    Create hud text ( //Add new display
+        text: "#{P}: New!
+        visible: filtered array( all players, O == count of(M) )
+        index: 10
+    )
+    Create hud text (
+        text: "place checkpoint" //or as close as I can get
+        visible: filtered array( all players, state == 20 )
+        index: 11
+    )
+    create hud text (
+        text: "left/right" //or as close as I can get
+        visible: filtered array( all players, state == 32 )
+        index: 11
+    )
+    create hud text (
+        text: "up/down" //or as close as I can get
+        visible: filtered array( all players, state == 33 )
+        index: 11
+    )
+    create hud text (
+        text: "Size" //or as close as I can get
+        visible: filtered array( all players, state == 34 )
+        index: 11
+    )
+    create hud text (
+        text: "choose checkpoint" //or as close as I can get
+        visible: filtered array( all players, state == 40 )
+        index: 11
+    )  
     
     state <= 2
-
-**state 2 - create node display 0 through 9**
+    
+**state 2 - create node value hud**
 Rule type: Ongoing - global
 
-    Do the thing, however many times and rules
-    state <= 10
-etc to make all the display nodes
-
-**State 10 - Set up edit effect**
-Rule type: Ongoing - global
-
-
-    create effect(
-	    pos: M
-	    size: N
-	    vis: all
-	    reeavluate: pos and size
+    (repeat x20)
+    Create hud text (
+        Text: "{index}: {A[{index}]}, {B[{index}]}"
+        sort: {index}
+        visible to: all players
+        reevaluate: all
     )
+    
+    state <= 3
 
-    P <= last created entity
+**state 3 - create extra hud text**
+Rule type: Ongoing - global
+
+    {make facing text}
+    {make edit size text}
+    
+    state <= 10
+
+**state 10 - create node display**
+Rule type: Ongoing - global
+
+    (repeat x20)
+    Create effect (
+        Type: sphere
+        position: A[{index}]
+        size: B[{index}]
+        color: white
+        visible to: filtered array( All players, state == 40 || P != {index} )
+        reevaluate: all
+    )
+    
+    state <= 11
+
+
+**State 11 - Set up edit effect**
+Rule type: Ongoing - global
+
+    Create effect (
+        Type: sphere
+        position: M
+        size: N
+        color: purple
+        visible to: filtered array( All players, state >= 20 && state <= 39 )
+        reevaluate: all
+    )
+    Create icon (
+        Type: circle
+        position: M
+        color: blue
+        visible to: All players
+        reevaluate: all
+    )
     state <= 20 //edit effect set position
 
 
