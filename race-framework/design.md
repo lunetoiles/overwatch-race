@@ -359,10 +359,13 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
 
     
     Create reset instructions on top - sort 9
+    Visible to: Filtered array(Event player, current:state != 20 )
+
+    Create start instructions on top - sort 9
+    Visible to: Filtered array(Event player, current:state == 20 )
+    
     Create second display on top - sort 10
     
-    Create start instructions on top - sort 11
-    Visible to: Filtered array(Event player, current:state == 20 )
     
 **Player state 1 - hud creation extra - moderator hud**
 
@@ -473,7 +476,7 @@ Rule type: Ongoing - Each player, team 2, slot 1
     Cond: button held(event playser, interact) == true
     
     throttle(event player, stop)
-    apply status(ep, stun, 9999)
+    set status(ep, root, 9999)
     wait .25
     State <= 21 //start spawn in process
     
@@ -493,6 +496,14 @@ Rule type: Ongoing - each player, team 2, slot 1
     
     A <= 1
     State <= 70
+
+**Player state 20 - More forcefully teach how to start race**
+
+    Cond: Q <= 3 //stop displaying message once the player has figured out how to start a couple times
+    
+    wait 15 abort
+    small message("Use ultimate ability = start race")
+    loop if true
     
 **Player state 21 - Wait for player to stop**
 
@@ -514,7 +525,7 @@ Rule type: Ongoing - each player, team 2, slot 1
     Big message(1)
     Wait(A)
     
-    Clear status(ep, stun)
+    Clear status(ep, root)
     Clear status(ep, invincible)
     
     Stop throttle(event player)
