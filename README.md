@@ -6,7 +6,7 @@ This repository hosts a framework and associated tools for creating Overwatch mu
 
 ### maps for 0.8:
 
-    Hanamura: 41G69
+    Hanamura: DRVR1
     (other maps will be ported soon)
 
 ### Maps for v0.7:
