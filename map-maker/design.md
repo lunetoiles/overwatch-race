@@ -19,8 +19,6 @@ Design document for the map editor. Also useful as an editor for placing nodes f
 
     Q - adjustment size
     
-    W - facing display
-
     Y - Prev state
     Z - State
 
