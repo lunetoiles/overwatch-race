@@ -35,68 +35,88 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
 
 All rules with a button listed in rule name have an implied condition of `is pressed(ep, {button}) == true`
 
-**State 0 - initialization**
+**state 0 - initial positions**
 
 Rule type: Ongoing - global
 
-    A <= [(0,0,0)]
-    B <= [3]
-    
-    M <= (0,0,0)
-    N <= 3
+    A <= [{initial node positions}]
+    state <= 1
+
+**state 1 - initial sizes**
+
+Rule type: Ongoing - global
+
+    B <= [{initial node sizes}]
+
+**State 2 - editor initialization**
+
+Rule type: Ongoing - global
+
+    M <= A[0]
+    N <= 1
     P <= 0
     
     Q <= 1
     
-    state <= 1
+    state <= 3
 
 
-**State 1 - create hud edit node text**
+**State 3 - create hud text**
 
 Rule type: Ongoing - global
-    
+
+    Create hud text ( //detail edit size display
+        text: "Current: {Q} M"
+        visible: All players
+        index: 10
+    )
     Create hud text ( //index, position, and size display
         text: "#{P}: {M}, {N}
-        visible: filtered array( all players, O < count of(M) )
+        visible: filtered array( all players, P < count of(A) )
         index: 10
     )
     Create hud text ( //Add new display
-        text: "#{P}: New!
-        visible: filtered array( all players, O == count of(M) )
+        text: "#{P}: Next
+        visible: filtered array( all players, P == count of(A) )
         index: 10
     )
     Create hud text (
-        text: "place checkpoint" //or as close as I can get
+        text: "checkpoint on you"
         visible: filtered array( all players, state == 20 )
         index: 11
     )
     create hud text (
-        text: "left/right" //or as close as I can get
+        text: "left/right"
         visible: filtered array( all players, state == 30 )
         index: 11
     )
     create hud text (
-        text: "foreward/back" //or as close as I can get
+        text: "forward/back"
         visible: filtered array( all players, state == 31 )
         index: 11
     )
     create hud text (
-        text: "up/down" //or as close as I can get
+        text: "up/down"
         visible: filtered array( all players, state == 32 )
         index: 11
     )
     create hud text (
-        text: "Size" //or as close as I can get
+        text: "Sphere"
         visible: filtered array( all players, state == 33 )
         index: 11
     )
     create hud text (
-        text: "choose checkpoint" //or as close as I can get
+        text: "Starting"
+        visible: filtered array( all players, state == 34 )
+        index: 11
+    )
+    create hud text (
+        text: "pick checkpoint"
         visible: filtered array( all players, state == 40 )
         index: 11
     )  
     
-    state <= 2
+    state <= 4
     
 **state 2 - create node value hud**
 
@@ -104,20 +124,11 @@ Rule type: Ongoing - global
 
     (repeat x20)
     Create hud text (
-        Text: "{index}: {A[{index}]}, {B[{index}]}"
+        Text: "{index}: {A[{index}]} {B[{index}]}"
         sort: {index}
         visible to: all players
         reevaluate: all
     )
-    
-    state <= 3
-
-**state 3 - create extra hud text**
-
-Rule type: Ongoing - global
-
-    {make facing text}
-    {make edit size text}
     
     state <= 10
 
@@ -152,9 +163,17 @@ Rule type: Ongoing - global
     )
     Create icon (
         Type: circle
-        position: M
+        position: A[P]
         color: blue
         visible to: All players
+        reevaluate: all
+    )
+    Create effect (
+        Type: orb
+        position: A[0] + (B[0] * 1.6)
+        size: 0.5
+        color: white
+        visible to: all players
         reevaluate: all
     )
     state <= 20 //edit effect set position
@@ -165,116 +184,92 @@ Rule type: Ongoing - global
     Cond: is pressed(ep, ultimate) == false
     
     M <= pos of( event player )
-    A[P] <= M
-
 
 **state 20 and interact - switch to detail edit mode**
 
-    State <= 30
-
+    Y <= 30
+    State <= 91
 
 **state 30 and primary fire - move node left**
-
-    Cond: is pressed(ep,ability 1) == false
     
-    I <= facing angle(ep)
-    J <= I * Left //get x component of facing angle
-    K <= I * Forward //get z component of facing angle
-    L <= (K,0,J) //Get right angle to facing angle
-    I <= unit vector(L) //convert to unit vecotr to make up for missing Y component
-    M += I * Q //update node position
-    A[P] <= M //save change
+    I <= horizontal facing angle of (ep)
+    J <= I + 90
+    K <= direction from angles ( J, 0)
+    M += K * Q //update node position
     wait .25
     loop if conditions true
 
-**state 30 and primary fire - move node right**
-
-    Cond: is pressed(ep,ability 1) == false
+**state 30 and secondary fire - move node right**
     
-    I <= facing angle(ep)
-    J <= I * Left //get x component of facing angle
-    K <= I * Forward //get z component of facing angle
-    L <= (K,0,J) //Get right angle to facing angle
-    I <= unit vector(L) //convert to unit vecotr to make up for missing Y component
-    M -= I * Q //update node position
-    A[P] <= M //save change
+    I <= horizontal facing angle of (ep)
+    J <= I - 90
+    K <= direction from angles ( J, 0)
+    M += K * Q //update node position
     wait .25
     loop if conditions true
 
 **State 30 and ability 1 - switch to forward/back edit**
 
-    State <= 31
+    Y <= 31
+    State <= 91
 
 
 **state 31 and primary fire - move node foreward**
-
-    Cond: is pressed(ep,ability 1) == false
     
-    I <= facing angle(ep)
-    J <= I * Left //get x component of facing angle
-    K <= I * Forward //get z component of facing angle
-    L <= (J,0,K) //remove y component from facing angle
-    I <= unit vector(L) //convert to unit vecotr to make up for missing Y component
-    M += I * Q //update node position
-    A[P] <= M //save change
+    I <= horizontal facing angle of (ep)
+    K <= direction from angles ( I, 0)
+    M += K * Q //update node position
     wait .25
     loop if conditions true
 
 **state 31 and primary fire - move node back**
 
-    Cond: is pressed(ep,ability 1) == false
-    
-    I <= facing angle(ep)
-    J <= I * Left //get x component of facing angle
-    K <= I * Forward //get z component of facing angle
-    L <= (J,0,K) //remove y component from facing angle
-    I <= unit vector(L) //convert to unit vecotr to make up for missing Y component
-    M -= I * Q //update node position
-    A[P] <= M //save change
+    I <= horizontal facing angle of (ep)
+    K <= direction from angles ( I, 0)
+    M -= K * Q //update node position
     wait .25
     loop if conditions true
 
 **State 31 and ability 1 - switch to up/down edit**
 
-    State <= 32
+    Y <= 32
+    state <= 92
     
 **state 32 and primary fire - move node up**
-
-    Cond: is pressed(ep,ability 1) == false
     
-    M += Up * Q //modify node position
-    A[P] <= M //save change
+    M += Up * Q
     wait .25
     loop if conditions true
 
-**state 32 and primary fire - move node right**
-
-    Cond: is pressed(ep,ability 1) == false
+**state 32 and secondary fire - move node down**
     
-    M += down * Q //modify node position
-    A[P] <= M //save change
+    M += down * Q
     wait .25
     loop if conditions true
 
-**State 32 and ability 1 - switch to size edit**
+**state 32 and ability 1 and index != 0 - change to size edit**
 
-    State <= 33
+    Cond: P != 0
+    
+    Y <= 33
+    State <= 91
+    
+**state 32 and ability 1 and index == 0 - change to initial facing edit**
+
+    Cond: P == 0
+    
+    Y <= 34
+    State <= 91
     
 **state 33 and primary fire - increase size**
-
-    Cond: is pressed(ep,ability 1) == false
     
-    N += Q //modify size
-    B[P] <= N //save change
+    N += Q
     wait .25
     loop if conditions true
 
 **state 33 and primary fire -decrease size**
 
-    Cond: is pressed(ep,ability 1) == false
-    
-    N -= Q //modify size
-    B[P] <= N //save change
+    N -= Q
     wait .25
     loop if conditions true
 
@@ -282,8 +277,16 @@ Rule type: Ongoing - global
 
     State <= 30
 
+**State 33 and ability 1 - switch to left/right edit**
 
-**state is >=30 and state <= 33 and interact - change to place mode**
+    B[0] <= facing direction of(ep)
+    
+**state 33 or state 34 and ability 1 - change to X detail edit mode**
+
+    Y <= 30
+    state <= 91
+
+**state is >=30 and state <= 34 and interact - change to place mode**
 
     state <= 20
 
@@ -294,109 +297,154 @@ Rule type: Ongoing - global
 
 **state 40 and primary fire - increase index**
 
-    Cond: P < count of(A)
-    
+    abort if( P == count of(A) )
+    abort if( P == 19 ) //max size
     P += 1
 
 
 **state 40 and secondary fire - decrease index**
 
-    Cond: P > 0
-    
+    abort if ( P == 0 )
     P -= 1
 
 
-**state 40 and ultimate  and O < count of (S) - goto edit existing node**
+**state 40 and ultimate  and P < count of (A) - goto edit existing node**
 
+    Cond: P < count of (A)
+    
     Y <= 43
     state <= 91
 
 
-**state 40 and ultimate  and O == count of (S) - goto append node**
+**state 40 and ultimate  and P == count of (A) - goto append node**
 
+    Cond: P == count of (A)
+    
+    skip if ( count of (A) < 20 ) {
+        play effect( ep, pos of(ep), explosion sound, 200)
+        abort
+    }
+    
     Y <= 44
     state <= 91
 
+**state 40 and interact and P < (count of (A)-1)- goto insert node**
 
-**state 40 and interact and O < (count of (S)-1)- goto insert node**
-
-    O += 1
+    Cond: P < ( count of (A) - 1 )
+    
+    skip if (count of (A) < 20 ) {
+        play effect( ep, pos of(ep), explosion sound, 200)
+        abort
+    }
+    
+    P += 1
     Y <= 45
     state <= 91
 
 
-**state 40 and interact and O >= (count of (S)-1) - goto append node**
+**state 40 and interact and P >= (count of (A)-1) - goto append node**
 
-    O <= count of (S)
+    Cond: P >= ( count of (A) - 1 )
+    
+    skip if (count of (A) < 20 ) {
+        play effect( ep, pos of(ep), explosion sound, 200)
+        abort
+    }
+    
+    P <= count of (A)
     Y <= 44
     state <= 91
 
 
 **state 40 and ability 1 and O < count of (S) - goto delete node**
-
+    
+    Cond: P < count of(A)
+    
+    skip if (P != 0 ) {
+        play effect( ep, pos of(ep), explosion sound, 200)
+        abort
+    }
+    
     Y <= 46
     state <= 91
 
 
 **State 43 - edit existing node**
 
-    delete effect( S[O] )
-    S[O] <= null
-    M <= J[O]
-    N <= K[O]
-    state <= 10
+    M <= A[O]
+    N <= B[O]
+    state <= 20
 
 
 **State 44 - append node at end**
 
-    append null to S
-    append (0,0,0) to J
-    append 3 to K
+    append A <= (0,0,0)
+    append B <= 3
     M <= (0,0,0)
     N <= 3
-    state <= 10
-
+    state <= 20
 
 **State 45 - insert node at index**
 
     M <= (0,0,0)
     N <= 3
-    A <= Slice(J,0,O)
-    B <= slice(K,0,O)
-    C <= slice(S,0,O)
-    Append A <= (0,0,0)
-    Append B <= 3
-    Append C <= null
-    Append A <= J[O:]
-    Append B <= K[O:]
-    Append C <= S[O:]
-    J <= A
-    K <= B
-    S <= C
-    state <= 10
-
+    I <= Slice(A,0,P)
+    J <= slice(B,0,P)
+    Append I <= (0,0,0)
+    Append J <= 3
+    Append I <= A[P:]
+    Append J <= B[P:]
+    A <= I
+    B <= J
+    state <= 20
 
 **State 46 - delete node at index**
 
-    Destroy S[O]
-    A <= Slice(J,0,O)
-    B <= slice(K,0,O)
-    C <= slice(S,0,O)
-    Append A <= J[O+1:]
-    Append B <= K[O+1:]
-    Append C <= S[O+1:]
-    J <= A
-    K <= B
-    S <= C
+    I <= Slice(A,0,P)
+    J <= slice(B,0,P)
+    Append I <= A[P+1:]
+    Append J <= B[P+1:]
+    A <= I
+    B <= J
     state <= 40
-
-
 
 **state 91 - release all the buttons state**
 
-    Cond: all buttons i'm checking == false
+    Cond: is button held(ep, interact) == false
+    Cond: is button held(ep, ultimate) == false
+    Cond: is button held(ep, ability 1) == false
+
     state <= Y
 
+**Keep position array updated**
 
+    Cond: State >= 20
+    Cond: State <= 39
+    M != A[P]
+    
+    A[P] <= M
+    
+**Keep size array updated**
+
+    Cond: State >= 20
+    Cond: State <= 39
+    P != 0 //don't overwrite initial spawn position value
+    N != B[P]
+    
+    B[P] <= N
+    
+**Change edit size**
+
+    cond: is button held(ep, jump) == true
+    
+    Skip if( not( Q == 1 ) ) {
+        Q <= 0.3
+        abort
+    }
+    skip if( not( Q == 0.3 ) ) {
+        Q <= 0.1
+        abort
+    }
+    Q <= 1
 
 
