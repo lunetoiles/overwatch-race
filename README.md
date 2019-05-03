@@ -10,20 +10,18 @@ This repository hosts a framework and associated tools for creating Overwatch mu
     Eichenwalde: 8TAHG
     (other maps will be ported soon)
 
-### Maps for v0.7:
-
-    Test map: YJ9E6
-    Eichenwalde: VRGJP
-    Junkertown: WFGP5
-    Hanamura: JKW3A
-
 ### Map Maker
 
     v0.3: CSEXD
 
+
 ### Old versions:
 
-    (not all had a code generated so many are missing)
+    Test map v0.7: YJ9E6
+    Eichenwalde v0.7: VRGJP
+    Junkertown v0.7: WFGP5
+    Hanamura v0.7: JKW3A
+
     V0.1 - GEW3Z
     V0.4 - 5VZD2
     V0.41 - 5W6AG
