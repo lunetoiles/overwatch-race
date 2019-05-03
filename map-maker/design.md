@@ -7,21 +7,18 @@ Design document for the map editor. Also useful as an editor for placing nodes f
 
 ## Global Variable Definitions
 
-    A, B, C, D - intermediate values
+    A - map node position list
+    B - map node size list
     
-    J - map node pos list
-    K - map node size list
-    L - world icon for current index
+    I,J,K,L - intermediate values
+
     M - edit map node pos
     N - edit map node size
-    O - edit map node index
-    P - edit node effect
+    
+    P - edit map node index
+
     Q - adjustment size
-    R - Adjustment delta
-    S - map node effects
-    T - mode quit
-    W - facing display
-    X - next index
+    
     Y - Prev state
     Z - State
 
@@ -36,249 +33,416 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
 
 All rules with a button listed in rule name have an implied condition of `is pressed(ep, {button}) == true`
 
-**State 0 - initialization**
+**state 0 - initial positions**
+
 Rule type: Ongoing - global
 
-    J <= [(0,0,0)]
-    K <= [3]
-    L <= []
-    S <= [null]
-    
-    M <= (0,0,0)
-    N <= 3
-    O <= 0
-    
+    A <= [{initial node positions}]
     state <= 1
 
+**state 1 - initial sizes**
 
-**State 1 - create hud texts**
 Rule type: Ongoing - global
 
+    B <= [{initial node sizes}]
 
-    Create checkpoint place text
-    Create x edit text
-    Create y edit text
-    Create z edit text
-    Create size edit text
-    Create index edit text
-    Create world icon for current index
-    Create “NEW” text
+**State 2 - editor initialization**
+
+Rule type: Ongoing - global
+
+    M <= A[0]
+    N <= 1
+    P <= 0
     
-    state <= 2
+    Q <= 1
+    
+    state <= 3
 
-**state 2 - create node display 0 through 9**
+
+**State 3 - create hud text**
+
 Rule type: Ongoing - global
 
-    Do the thing, however many times and rules
-    state <= 10
-etc to make all the display nodes
-
-**State 10 - Set up edit effect**
-Rule type: Ongoing - global
-
-
-    create effect(
-	    pos: M
-	    size: N
-	    vis: all
-	    reeavluate: pos and size
+    Create hud text ( //detail edit size display
+        text: "Current: {Q} M"
+        visible: All players
+        index: 10
     )
+    Create hud text ( //index, position, and size display
+        text: "#{P}: {M}, {N}
+        visible: filtered array( all players, P < count of(A) )
+        index: 10
+    )
+    Create hud text ( //Add new display
+        text: "#{P}: Next
+        visible: filtered array( all players, P == count of(A) )
+        index: 10
+    )
+    Create hud text (
+        text: "checkpoint on you"
+        visible: filtered array( all players, state == 20 )
+        index: 11
+    )
+    create hud text (
+        text: "left/right"
+        visible: filtered array( all players, state == 30 )
+        index: 11
+    )
+    create hud text (
+        text: "forward/back"
+        visible: filtered array( all players, state == 31 )
+        index: 11
+    )
+    create hud text (
+        text: "up/down"
+        visible: filtered array( all players, state == 32 )
+        index: 11
+    )
+    create hud text (
+        text: "Sphere"
+        visible: filtered array( all players, state == 33 )
+        index: 11
+    )
+    create hud text (
+        text: "Starting"
+        visible: filtered array( all players, state == 34 )
+        index: 11
+    )
+    create hud text (
+        text: "pick checkpoint"
+        visible: filtered array( all players, state == 40 )
+        index: 11
+    )  
+    
+    state <= 4
+    
+**state 2 - create node value hud**
 
-    P <= last created entity
+Rule type: Ongoing - global
+
+    (repeat x20)
+    Create hud text (
+        Text: "{index}: {A[{index}]} {B[{index}]}"
+        sort: {index}
+        visible to: all players
+        reevaluate: all
+    )
+    
+    state <= 10
+
+**state 10 - create node display**
+
+Rule type: Ongoing - global
+
+    (repeat x20)
+    Create effect (
+        Type: sphere
+        position: A[{index}]
+        size: B[{index}]
+        color: white
+        visible to: filtered array( All players, state == 40 || P != {index} )
+        reevaluate: all
+    )
+    
+    state <= 11
+
+
+**State 11 - Set up edit effect**
+
+Rule type: Ongoing - global
+
+    Create effect (
+        Type: sphere
+        position: M
+        size: N
+        color: purple
+        visible to: filtered array( All players, state >= 20 && state <= 39 )
+        reevaluate: all
+    )
+    Create icon (
+        Type: circle
+        position: A[P]
+        color: blue
+        visible to: All players
+        reevaluate: all
+    )
+    Create effect (
+        Type: orb
+        position: A[0] + (B[0] * 1.6)
+        size: 0.5
+        color: white
+        visible to: all players
+        reevaluate: all
+    )
     state <= 20 //edit effect set position
 
 
-**state 20 and primary fire - move effect**
+**state 20 and primary fire - place node and player**
 
+    Cond: is pressed(ep, ultimate) == false
+    
     M <= pos of( event player )
-    Y <= 20
-    state <= 91
-
 
 **state 20 and interact - switch to detail edit mode**
 
-    R <= Left
-    goto state 30
+    Y <= 30
+    State <= 91
 
-
-**state >= 30 and state <= 32 and primary fire - add vector delta**
-
-    M += R * Q
-    Y <= state
+**state 30 and primary fire - move node left**
+    
+    I <= horizontal facing angle of (ep)
+    J <= I + 90
+    K <= direction from angles ( J, 0)
+    M += K * Q //update node position
     wait .25
     loop if conditions true
 
-
-**state >= 30 and state <= 32 and secondary fire - subtract vector delta**
-
-    M -= R * Q
-    Y <= state
+**state 30 and secondary fire - move node right**
+    
+    I <= horizontal facing angle of (ep)
+    J <= I - 90
+    K <= direction from angles ( J, 0)
+    M += K * Q //update node position
     wait .25
     loop if conditions true
 
+**State 30 and ability 1 - switch to forward/back edit**
 
-**state is 33 and primary fire - increase size**
-
-    N += R
-    Y <= state
-    wait .25
-    loop if conditions true
-
-
-**state is 33 and primary fire - decrease size**
-
-    N -= R
-    Y <= state
-    wait .25
-    loop if conditions true
-
-
-**state is 30 and ability 1 - change to Y detail edit mode**
-
-    R <= Up
     Y <= 31
-    state <= 91
+    State <= 91
 
 
-**state is 31 and ability 1 - change to Z detail edit mode**
+**state 31 and primary fire - move node foreward**
+    
+    I <= horizontal facing angle of (ep)
+    K <= direction from angles ( I, 0)
+    M += K * Q //update node position
+    wait .25
+    loop if conditions true
 
-    R <= Forward
+**state 31 and primary fire - move node back**
+
+    I <= horizontal facing angle of (ep)
+    K <= direction from angles ( I, 0)
+    M -= K * Q //update node position
+    wait .25
+    loop if conditions true
+
+**State 31 and ability 1 - switch to up/down edit**
+
+    Y <= 32
+    state <= 92
+    
+**state 32 and primary fire - move node up**
+    
+    M += Up * Q
+    wait .25
+    loop if conditions true
+
+**state 32 and secondary fire - move node down**
+    
+    M += down * Q
+    wait .25
+    loop if conditions true
+
+**state 32 and ability 1 and index != 0 - change to size edit**
+
+    Cond: P != 0
+    
     Y <= 33
-    state <= 91
+    State <= 91
+    
+**state 32 and ability 1 and index == 0 - change to initial facing edit**
 
+    Cond: P == 0
+    
+    Y <= 34
+    State <= 91
+    
+**state 33 and primary fire - increase size**
+    
+    N += Q
+    wait .25
+    loop if conditions true
 
-**state is 32 and ability 1 - change to size detail edit mode**
+**state 33 and primary fire -decrease size**
 
-    Y <= 33
-    state <= 91
+    N -= Q
+    wait .25
+    loop if conditions true
 
-**state is 33 and first skill - change to X detail edit mode**
+**State 33 and ability 1 - switch to left/right edit**
 
-    R = Left
+    State <= 30
+
+**State 33 and ability 1 - switch to left/right edit**
+
+    B[0] <= facing direction of(ep)
+    
+**state 33 or state 34 and ability 1 - change to X detail edit mode**
+
     Y <= 30
     state <= 91
 
+**state is >=30 and state <= 34 and interact - change to place mode**
 
-**state is >=30 and state <= 33 and interact - change to place mode**
-
-    state <= 21
+    state <= 20
 
 **state is >= 20 and sate <= 39 and ultimate - go to index change mode**
 
-    state <= 41
-
-
-
-**State 41 - put edit node into list**
-
-    do the things to put edit node into display list as generic white sqhere
-    delete edit effect
     state <= 40
 
 
 **state 40 and primary fire - increase index**
 
-    abort if O = count of (S)
-    O+=1
+    abort if( P == count of(A) )
+    abort if( P == 19 ) //max size
+    P += 1
 
 
 **state 40 and secondary fire - decrease index**
 
-    abort if O = 0
-    O-=1
+    abort if ( P == 0 )
+    P -= 1
 
 
-**state 40 and ultimate  and O < count of (S) - goto edit existing node**
+**state 40 and ultimate  and P < count of (A) - goto edit existing node**
 
+    Cond: P < count of (A)
+    
     Y <= 43
     state <= 91
 
 
-**state 40 and ultimate  and O == count of (S) - goto append node**
+**state 40 and ultimate  and P == count of (A) - goto append node**
 
+    Cond: P == count of (A)
+    
+    skip if ( count of (A) < 20 ) {
+        play effect( ep, pos of(ep), explosion sound, 200)
+        abort
+    }
+    
     Y <= 44
     state <= 91
 
+**state 40 and interact and P < (count of (A)-1)- goto insert node**
 
-**state 40 and interact and O < (count of (S)-1)- goto insert node**
-
-    O += 1
+    Cond: P < ( count of (A) - 1 )
+    
+    skip if (count of (A) < 20 ) {
+        play effect( ep, pos of(ep), explosion sound, 200)
+        abort
+    }
+    
+    P += 1
     Y <= 45
     state <= 91
 
 
-**state 40 and interact and O >= (count of (S)-1) - goto append node**
+**state 40 and interact and P >= (count of (A)-1) - goto append node**
 
-    O <= count of (S)
+    Cond: P >= ( count of (A) - 1 )
+    
+    skip if (count of (A) < 20 ) {
+        play effect( ep, pos of(ep), explosion sound, 200)
+        abort
+    }
+    
+    P <= count of (A)
     Y <= 44
     state <= 91
 
 
 **state 40 and ability 1 and O < count of (S) - goto delete node**
-
+    
+    Cond: P < count of(A)
+    
+    skip if (P != 0 ) {
+        play effect( ep, pos of(ep), explosion sound, 200)
+        abort
+    }
+    
     Y <= 46
     state <= 91
 
 
 **State 43 - edit existing node**
 
-    delete effect( S[O] )
-    S[O] <= null
-    M <= J[O]
-    N <= K[O]
-    state <= 10
+    M <= A[O]
+    N <= B[O]
+    state <= 20
 
 
 **State 44 - append node at end**
 
-    append null to S
-    append (0,0,0) to J
-    append 3 to K
+    append A <= (0,0,0)
+    append B <= 3
     M <= (0,0,0)
     N <= 3
-    state <= 10
-
+    state <= 20
 
 **State 45 - insert node at index**
 
     M <= (0,0,0)
     N <= 3
-    A <= Slice(J,0,O)
-    B <= slice(K,0,O)
-    C <= slice(S,0,O)
-    Append A <= (0,0,0)
-    Append B <= 3
-    Append C <= null
-    Append A <= J[O:]
-    Append B <= K[O:]
-    Append C <= S[O:]
-    J <= A
-    K <= B
-    S <= C
-    state <= 10
-
+    I <= Slice(A,0,P)
+    J <= slice(B,0,P)
+    Append I <= (0,0,0)
+    Append J <= 3
+    Append I <= A[P:]
+    Append J <= B[P:]
+    A <= I
+    B <= J
+    state <= 20
 
 **State 46 - delete node at index**
 
-    Destroy S[O]
-    A <= Slice(J,0,O)
-    B <= slice(K,0,O)
-    C <= slice(S,0,O)
-    Append A <= J[O+1:]
-    Append B <= K[O+1:]
-    Append C <= S[O+1:]
-    J <= A
-    K <= B
-    S <= C
+    I <= Slice(A,0,P)
+    J <= slice(B,0,P)
+    Append I <= A[P+1:]
+    Append J <= B[P+1:]
+    A <= I
+    B <= J
     state <= 40
-
-
 
 **state 91 - release all the buttons state**
 
-    Cond: all buttons i'm checking == false
+    Cond: is button held(ep, interact) == false
+    Cond: is button held(ep, ultimate) == false
+    Cond: is button held(ep, ability 1) == false
+
     state <= Y
 
+**Keep position array updated**
 
+    Cond: State >= 20
+    Cond: State <= 39
+    M != A[P]
+    
+    A[P] <= M
+    
+**Keep size array updated**
+
+    Cond: State >= 20
+    Cond: State <= 39
+    P != 0 //don't overwrite initial spawn position value
+    N != B[P]
+    
+    B[P] <= N
+    
+**Change edit size**
+
+    cond: is button held(ep, jump) == true
+    
+    Skip if( not( Q == 1 ) ) {
+        Q <= 0.3
+        abort
+    }
+    skip if( not( Q == 0.3 ) ) {
+        Q <= 0.1
+        abort
+    }
+    Q <= 1
 
 

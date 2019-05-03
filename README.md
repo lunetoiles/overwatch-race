@@ -19,7 +19,7 @@ This repository hosts a framework and associated tools for creating Overwatch mu
 
 ### Map Maker
 
-    v0.2: Q4ZH4
+    v0.3: CSEXD
 
 ### Old versions:
 
