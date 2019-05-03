@@ -54,7 +54,7 @@ The following list used A as a stand in for global or player variable A-Z, using
 
 `A += <value>`, `A -= <value>`, etc  - Modify variable with action add, subtract, etc and value.
 
-`append A <= <value>` - Modify global with action append and value.
+`append A <= <value>` - Modify variable with action append and value.
 
 `A[<index>] <= <value>` - Set variable at `<index>` to value
 
