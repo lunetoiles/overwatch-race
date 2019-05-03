@@ -1,7 +1,7 @@
 # Syntax Definition
 
 This document defines the format used fo the design documents in this repository. The syntax and layout
-is meant to make state machine based logic easy to read and write, while still being easier to mentally
+is meant to make state machine based logic easy to read and write, while still being easy to mentally
 convert to the in game drop-down boxes when entering the code. Maybe someday there will be a compiler and
 an autohotkey script for entering the code, but for now its just a semi-standardized format.
 
