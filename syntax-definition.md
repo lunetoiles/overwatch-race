@@ -82,6 +82,15 @@ Anything after `//` is a comment.
 Anything written in curly brackets stands in for something customizable, or that just
 hasn't been written out explicitly yet.
 
+    create effect(
+        type: white
+        position: A
+        raidius: B
+    )
+    
+An action or function with the arguments labeled with their names, and arguments not mentioned set to
+their default values.
+        
     (repeat 0 to 10)
     A[{index}] <= gB[{index}] + 1
 
