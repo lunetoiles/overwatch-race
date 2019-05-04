@@ -11,14 +11,14 @@
         1: gather point width
         2: gather point length
         3: gather point angle //degrees in world space
-        4: options spot
-        5: leaderboard position
-        6: leaderboard scale
+        4: leaderboard position
+        5: leaderboard scale
+        6: options spot
         7: operator spot
     ]
     D - misc settings [
         0: Checkpoint distance adjustment
-        1: Team const - which team to teleport
+        1: Team const - Which team does gather room belong to?
         2: Number of capture points
         3: Number of payload checkpoints
     ]
@@ -64,7 +64,7 @@
     S - Last times array
     T - Play time
     U - finishes
-    V - available, should use for a statistic
+    V - 
     W - Best time
     X - Run time
     Y -
@@ -84,8 +84,6 @@ Rule type: Ongoing - Global
 Rule type: Player Died
 
     State <= 90
-
-  
 
 **Ultimate pressed - quick reset**
 
@@ -535,12 +533,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Cond: is alive(ep) == true
     Cond: is in spawn room(ep) == true
     
-    Skip if ( team of(ep) != gD[1] ) {
-    	//ep in teleport group
-    	State <= 15
-    	Abort
-    }
-    State <= 20
+    State <= 15
     
 **Player state 15 - Teleport to gather room**
 
@@ -552,11 +545,18 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     D <= random real(-A,A)
     A <= Direction from angles(gC[3] + 90, 0) * C
     B <= Direction from angles(gC[3], 0) * D
-    D <= gC[0] + (A,0,B)
+    D <= gC[0] + A + B
     
     teleport(ep,D) //teleport to spot
     
-    Set facing(ep,direcion towards(D, C[4]) //look towards the leaderboard
+    Set facing ( //look towards leaderboard along level plane
+        player: ep
+        direction:
+            direction from angles(
+                horizontal angle: horizontal angle from direction ( direction towards(D, C[4]) )
+                vertical angle: 0
+            )
+    )
     
     State <= 20
     
@@ -570,7 +570,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
 **Player state 20 and left spawn - Return player to gather point**
 
-    Cond: Team of(event player) != D[1] //player not in teleport group and spawn door is open
+    Cond: Team of(event player) == D[1] //Gather room belongs to player, so the doors are open and they count as in spawn
     Cond: In spawn(event player) == false
     Cond: gQ == false // don't force it in debug
     
