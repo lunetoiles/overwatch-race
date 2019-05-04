@@ -57,7 +57,10 @@
     L
     M
     N
-    O - Option array
+    O - Option array [
+        0: skip countdown
+        1: mute sounds
+    ]
     P - Checkpoint index
     Q - Attempts
     R - Best time array
@@ -627,14 +630,13 @@ Rule type: Ongoing - each player, team 2, slot 1
     Set facing(ep, gC[0]) //race start facing
     P <= 1
     A <= 0.8 //adjust for feel
-    Small message(3)
-    Play effect(ep, buff explosion sound, white, position of(ep), 35)
-    Wait(A)
-    Small message(2)
-    Play effect(ep, buff explosion sound, white, position of(ep), 35)
-    Wait(A)
-    Small message(1)
-    Play effect(ep, buff explosion sound, white, position of(ep), 35)
+    skip if( O[0] ) {
+        Small message(3)
+        Wait(A)
+        Small message(2)
+        Wait(A)
+        Small message(1)
+    }
     Wait(A)
     
     Clear status(ep, root)
@@ -642,7 +644,9 @@ Rule type: Ongoing - each player, team 2, slot 1
     
     Stop throttle(event player)
     Big message ("Go!")
-    Play effect(ep, buff explosion sound, white, position of(ep), 999)
+    skip if( O[1] ) {
+        Play effect(ep, buff explosion sound, white, position of(ep), 999)
+    }
     
     X <= 0
     Chase player variable(ep, X, 999, 1) // start race timer
@@ -655,8 +659,10 @@ Rule type: Ongoing - each player, team 2, slot 1
     
     A <= gA[P]
     B <= gB[P]
-    Play effect(ep, ring explosion, white, A,  B * 2.5)
-    Play effect(ep, explosion sound, white, position of(ep), 80)
+    skip if ( O[1] ) {
+        Play effect(ep, ring explosion, white, A,  B * 2.5)
+        Play effect(ep, explosion sound, white, position of(ep), 80)
+    }
 
     P += 1
     Abort if (P < N)
@@ -667,7 +673,9 @@ Rule type: Ongoing - each player, team 2, slot 1
     Cond: Distance between( pos of(Event player), gA[gN]) < gB[gN] + D[0] )
     
     C <= gA[P]
-    Play effect(ep, ring explosion sound, white, C, 999)   
+    skip if ( O[1] ) {
+        Play effect(ep, ring explosion sound, white, C, 999)
+    }
     
     P <= 999
     State <= 50
