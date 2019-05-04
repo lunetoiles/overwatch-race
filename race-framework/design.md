@@ -6,7 +6,7 @@
     A - checkpoint positions
     B - checkpoint sizes. B[0] is spawn facing vector instead of size
     
-    C - spawn room settings [
+    C - gather room settings [
         0: gather point center
         1: gather point width
         2: gather point length
@@ -148,18 +148,16 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     B <= [{checkpoint sizes}]
     State <=2
     
-**Global state 2 - spawn room config**
+**Global state 2 - gather room config**
 
     
-    C <= [{spawn settings}]
+    C <= [{gather settings}]
     State <= 3
     
 **Global state 3 - misc config**
 
     
     Q <= {true/false} //debug state
-    Start forcing spawn room(team 1, {room})
-    Start forcing spawn room(team 2, {room})
     
     D <= [{config settings}]
     State <= 10
