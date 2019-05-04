@@ -4,23 +4,20 @@ This repository hosts a framework and associated tools for creating Overwatch mu
 
 ## Codes
 
-### maps for 0.81:
+### Maps
 
-    Hanamura: BJ8EH
-    Eichenwalde: 8TAHG
-    (other maps will be ported soon)
+    Hanamura (v0.81): BJ8EH
+    Eichenwalde (v0.81): 8TAHG
+    Junkertown (v0.7): YJ9E6
+    Test map (v0.7): YJ9E6
 
-### Map Maker
+### Tools
 
-    v0.3: CSEXD
+    Map maker v0.3: CSEXD
+    Gather room editor for v0.9: 3TVK1
 
 
-### Old versions:
-
-    Test map v0.7: YJ9E6
-    Eichenwalde v0.7: VRGJP
-    Junkertown v0.7: WFGP5
-    Hanamura v0.7: JKW3A
+### Early development versions:
 
     V0.1 - GEW3Z
     V0.4 - 5VZD2
