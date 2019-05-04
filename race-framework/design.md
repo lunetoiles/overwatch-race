@@ -580,7 +580,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
 
 Rule type: Ongoing - each player, team 2, slot 1
 
-    Cond: distance between( position of(ep), gC[8]) < 3 
+    Cond: distance between( position of(ep), gC[7]) < 3 
     
     wait 3 abort
     A <= 1
@@ -716,7 +716,7 @@ Rule type: Ongoing - each player, team 2, slot 1
     
 **Player state 70 and leave operator spot - go back to wait mode**
 
-    Cond: distance between( position of(ep), gC[8]) > 3
+    Cond: distance between( position of(ep), gC[7]) > 3
     
     State <= 20
     
