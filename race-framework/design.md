@@ -37,7 +37,7 @@
     R - Enable/disable debug hud
     S
     T
-    U - Server uptime
+    U
     V
     W - Fastest time
     X -
@@ -57,7 +57,7 @@
     L
     M
     N
-    O
+    O - Option array
     P - Checkpoint index
     Q - Attempts
     R - Best time array
@@ -164,6 +164,8 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     
 **Global State 10 - Unlock map**
 
+    Disable built-in game mode completion
+    Disable built-in game mode anouncer
     
     Skip if (D[2] == 0 AND D[3] == 0) { //skip if no capture points for payload, so skirmish maps
     	state <= 11
@@ -187,9 +189,7 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     Wait 1
     Set match time(0)
     Wait 1
-    
-    Disable built-in completion
-    
+        
     State <= 15 // unlocking state
     
 **Global state 15 - Freeze players**
@@ -241,6 +241,8 @@ Rule type: Ongoing - Each Player
     R <= Q //default debug hud toggle to debug state
     Pause match time
     Set match time (671) //display "11:11" because it looks nice
+    skip if ( D[2] != 1 && D[3] != 0 ) {
+        set match time(1111) //control maps display in seconds
     Set objective description ("go fast!")
     
     State <= 20
@@ -382,9 +384,6 @@ Rule type: Ongoing - Each Player
 
     Cond: is game in progress == true
     
-    U <= 0
-    chase global variable at rate(U, 10000, 1, none) //server uptime counter
-    
     Y <= true //init complete
     State <= 999
     
@@ -406,6 +405,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
         
     P <= 999
     
+    O <= [false, false]
     Q <= 0 //init attempts
     R <= [] //empty best times array
     S <= [] // empty last times array
@@ -447,6 +447,20 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
         sort: 12
         Location: top
     )
+
+    Create hud text ( //option select, false
+        visible to: filtered array(ep, state == 80) && O[A]
+        header: "#{A+1}: off"
+        sort: 12
+        Location: top
+    )
+    
+    Create hud text ( //option select, true
+        visible to: filtered array(ep, state == 80) && O[A]
+        header: "#{A+1}: on"
+        sort: 12
+        Location: top
+    )
     
     wait .25 //avoid processing limits
     
@@ -458,7 +472,6 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     {Create records header on left - sort -10}
     {Create attempts text - sort -9}
     {Create completions text - sort -8}
-    {Create "total game time" text - sort -7}
     {Create "your game time" text - sort -6}
     
     wait .25 //avoid processing limits
@@ -574,13 +587,21 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     State <= 15
     
+**player state 20 and in options spot - start options mode**
+
+    Cond: distance between( position of(ep), gC[6]) < 1.5
+    
+    wait 1 abort
+    A <= 0
+    State <= 80
+    
 **player state 20 and in operator spot - start operator mode**
 
 Rule type: Ongoing - each player, team 2, slot 1
 
-    Cond: distance between( position of(ep), gC[7]) < 3 
+    Cond: distance between( position of(ep), gC[7]) < 1.5
     
-    wait 3 abort
+    wait 1 abort
     A <= 1
     State <= 70
 
@@ -606,13 +627,13 @@ Rule type: Ongoing - each player, team 2, slot 1
     Set facing(ep, gC[0]) //race start facing
     P <= 1
     A <= 0.8 //adjust for feel
-    Big message(3)
+    Small message(3)
     Play effect(ep, buff explosion sound, white, position of(ep), 35)
     Wait(A)
-    Big message(2)
+    Small message(2)
     Play effect(ep, buff explosion sound, white, position of(ep), 35)
     Wait(A)
-    Big message(1)
+    Small message(1)
     Play effect(ep, buff explosion sound, white, position of(ep), 35)
     Wait(A)
     
@@ -717,7 +738,33 @@ Rule type: Ongoing - each player, team 2, slot 1
     Cond: distance between( position of(ep), gC[7]) > 3
     
     State <= 20
+
+**Player state 80 and primary fire - increase option index**
+
+    Cond: A < count of(O) - 1
+    Cond: is pressed(ep,primary fire) == true
     
+    A += 1
+    
+**Player state 80 and secondary fire - decrease option index**
+
+    Cond: A > 0
+    Cond: is pressed(ep,secondary fire) == true
+    
+    A -= 1
+    
+**Player state 80 and interact - toggle option**
+
+    Cond: is pressed(ep,interact) == true
+    
+    B <= not( O[A] )
+    O[A] <= B
+    
+**Player state 80 and leave options spot - go back to wait mode**
+
+    Cond: distance between( position of(ep), gC[6]) > 3
+    
+    State <= 20
     
 **Player state 90 - Start reset sequence**
 
