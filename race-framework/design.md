@@ -4,27 +4,21 @@
 
 
     A - checkpoint positions
-    B - checkpoint sizes
+    B - checkpoint sizes. B[0] is spawn facing vector instead of size
     
     C - spawn room settings [
-        0: Race start facing
-        1: gather point
-        2: gather point size
-        3: gather spawn facing
+        0: gather point center
+        1: gather point width
+        2: gather point length
+        3: options spot
         4: Leaderboard position
-        5: Leaderboard scale
-        6: poll option 1 position
-        7: poll option 2 position
-        8: moderator spot
+        5: moderator spot
     ]
     D - misc settings [
         0: Checkpoint distance adjustment
         1: Team const - which team to teleport
         2: Number of capture points
         3: Number of payload checkpoints
-        4: Floor is lava mode?
-        5: Number of ground touches allowed
-        6: Ground time allowed
     ]
     
     E-H - intermediate values
@@ -35,13 +29,13 @@
     L - Leaderboard
     M - is top score disconnected?
     N - finish line checkpoint index
-    O
-    P - code table (P for puzzle)
+    O - 
+    P -
     Q - Debug
     R - Enable/disable debug hud
     S
     T
-    U
+    U - Server uptime
     V
     W - Fastest time
     X -
@@ -65,7 +59,7 @@
     P - Checkpoint index
     Q - Attempts
     R - Best time array
-    S - Last times
+    S - Last times array
     T - Play time
     U - finishes
     V - available, should use for a statistic
