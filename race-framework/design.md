@@ -159,6 +159,9 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     
 **Global state 3 - misc config**
 
+    //If the gather room is in a team's spawn room, that team must be forced to that index. Otherwise, any index will work
+    start forcing spawn room(Team 1, {room})
+    start forcing spawn room(Team 2, {room})
     
     Q <= {true/false} //debug state
     
@@ -417,6 +420,8 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     U <= 0 // init completions
     W <= 999 //initial best time
     
+    Wait( random real(0.25, 2) ) //wait random length to avoid server load/crashes
+    
     State <= 1
     
 **Player state 1 - hud creation part 1 - Top text**
@@ -465,7 +470,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
         Location: top
     )
     
-    wait .25 //avoid processing limits
+    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
     
     state <= 2
     
@@ -477,7 +482,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     {Create completions text - sort -8}
     {Create "your game time" text - sort -6}
     
-    wait .25 //avoid processing limits
+    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
     
     State <= 3 
     
@@ -490,7 +495,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     (repeat 0 to 4)
     {Create {index}+1 fastest time text - sort {index}}
     
-    wait .25 //avoid processing limits
+    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
     
     State <= 4
     
@@ -502,7 +507,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     (repeat 0 to 4)
     {Create {index + 1} most recent completion time - sort 10 + {index}}
     
-    wait .25 //avoid processing limits
+    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
 
     State <= 5
     
