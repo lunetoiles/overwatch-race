@@ -4,27 +4,23 @@
 
 
     A - checkpoint positions
-    B - checkpoint sizes
+    B - checkpoint sizes. B[0] is spawn facing vector instead of size
     
-    C - spawn room settings [
-        0: Race start facing
-        1: gather point
-        2: gather point size
-        3: gather spawn facing
-        4: Leaderboard position
-        5: Leaderboard scale
-        6: poll option 1 position
-        7: poll option 2 position
-        8: moderator spot
+    C - gather room settings [
+        0: gather point center
+        1: gather point width
+        2: gather point length
+        3: gather point angle //degrees in world space
+        4: leaderboard position
+        5: leaderboard scale
+        6: options spot
+        7: operator spot
     ]
     D - misc settings [
         0: Checkpoint distance adjustment
-        1: Team const - which team to teleport
+        1: Team const - Which team does gather room belong to?
         2: Number of capture points
         3: Number of payload checkpoints
-        4: Floor is lava mode?
-        5: Number of ground touches allowed
-        6: Ground time allowed
     ]
     
     E-H - intermediate values
@@ -35,8 +31,8 @@
     L - Leaderboard
     M - is top score disconnected?
     N - finish line checkpoint index
-    O
-    P - code table (P for puzzle)
+    O - 
+    P -
     Q - Debug
     R - Enable/disable debug hud
     S
@@ -51,24 +47,27 @@
 ## Player Variable Definitions
 
     A-D - Main loop intermediate values
-    E - Edit mode adjustment scale
-    F - Poll mode vote choice
-    G - Ground touch counter
-    H - Ground touch start time
+    E -
+    F -
+    G -
+    H -
     I
     J
     K
     L
     M
     N
-    O
+    O - Option array [
+        0: skip countdown
+        1: mute sounds
+    ]
     P - Checkpoint index
     Q - Attempts
     R - Best time array
-    S - Last times
+    S - Last times array
     T - Play time
     U - finishes
-    V - available, should use for a statistic
+    V - 
     W - Best time
     X - Run time
     Y -
@@ -88,8 +87,6 @@ Rule type: Ongoing - Global
 Rule type: Player Died
 
     State <= 90
-
-  
 
 **Ultimate pressed - quick reset**
 
@@ -154,24 +151,27 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     B <= [{checkpoint sizes}]
     State <=2
     
-**Global state 2 - spawn room config**
+**Global state 2 - gather room config**
 
     
-    C <= [{spawn settings}]
+    C <= [{gather settings}]
     State <= 3
     
 **Global state 3 - misc config**
 
+    //If the gather room is in a team's spawn room, that team must be forced to that index. Otherwise, any index will work
+    start forcing spawn room(Team 1, {room})
+    start forcing spawn room(Team 2, {room})
     
     Q <= {true/false} //debug state
-    Start forcing spawn room(team 1, {room})
-    Start forcing spawn room(team 2, {room})
     
     D <= [{config settings}]
     State <= 10
     
 **Global State 10 - Unlock map**
 
+    Disable built-in game mode completion
+    Disable built-in game mode anouncer
     
     Skip if (D[2] == 0 AND D[3] == 0) { //skip if no capture points for payload, so skirmish maps
     	state <= 11
@@ -195,9 +195,7 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     Wait 1
     Set match time(0)
     Wait 1
-    
-    Disable built-in completion
-    
+        
     State <= 15 // unlocking state
     
 **Global state 15 - Freeze players**
@@ -248,7 +246,9 @@ Rule type: Ongoing - Each Player
     W <= 999 //starting best time
     R <= Q //default debug hud toggle to debug state
     Pause match time
-    Set match time 11:11 (671 seconds)
+    Set match time (671) //display "11:11" because it looks nice
+    skip if ( D[2] != 1 && D[3] != 0 ) {
+        set match time(1111) //control maps display in seconds
     Set objective description ("go fast!")
     
     State <= 20
@@ -313,39 +313,77 @@ Rule type: Ongoing - Each Player
     	Clipping: Yes
     	Reevaluation: Visible to and string
     )	
-    E <= E + (down * G)    
+    E <= E + (down * G)
+    
     State <= 30
     
 **Global state 30 - Create finish checkpoint and icon**
 
-    
-    [create goal effect]
-    [create goal icon]
+    Create effect(
+        visible to: All players
+        type: sphere
+        color: yellow
+        position: A[N]
+        radius: B[N]
+    )
+        
+    Create icon(
+        visible to: filtered array(all players, cu:P == N)
+        position: A[N]
+        icon: exclamation mark
+    )
     
     State <= 40
     
-**Global state 40 - Create white checkpoint 2-4**
+**Global state 40 - Create white checkpoint 1-4**
 
-    
-    [Create effects]
+    (repeat 1 to 4)
+    create effect (
+        visible to: filtered array( all players, cu:P < {index} && {index} < N )
+        type: sphere
+        color: white
+        position: A[{index}]
+        radius: B[{index}]
+    )
     State <= 41
     
 **Global state 41 - Create white checkpoint 5-9**
 
     
-    [Create effects]
+    (repeat 5 to 9)
+    create effect (
+        visible to: filtered array( all players, cu:P < {index} && {index} < N )
+        type: sphere
+        color: white
+        position: A[{index}]
+        radius: B[{index}]
+    )
     State <= 42
     
 **Global state 42 - Create white checkpoint 10-14**
 
     
-    [Create effects]
+    (repeat 10 to 14)
+    create effect (
+        visible to: filtered array( all players, cu:P < {index} && {index} < N )
+        type: sphere
+        color: white
+        position: A[{index}]
+        radius: B[{index}]
+    )
     State <= 43
     
 **Global state 43 - Create white checkpoint 15-19**
 
     
-    [Create effects]
+    (repeat 15 to 19)
+    create effect (
+        visible to: filtered array( all players, cu:P < {index} && {index} < N )
+        type: sphere
+        color: white
+        position: A[{index}]
+        radius: B[{index}]
+    )
     State <= 90
     
 **Global state 90 - complete global init**
@@ -355,7 +393,7 @@ Rule type: Ongoing - Each Player
     Y <= true //init complete
     State <= 999
     
-    Global state 999 - Wait state (no actual rule)
+**Global state 999 - Wait state (no actual rule)**
 
 ## Player State Machine
 
@@ -369,49 +407,82 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     Disable built in mode respawning(event player) //this doesnft even work
     Set respawn max time(ep, 99) //long respawn
-    Start forcing throttle(ep, stop) //stop player during init
     Disallow button(ep, ultimate) //disallow ultimate
-    
-    E <= 1 //start edit adjust at max size
-    
+        
     P <= 999
     
+    O <= [false, false]
     Q <= 0 //init attempts
     R <= [] //empty best times array
     S <= [] // empty last times array
     T <= 0 //init total play time timer
-    Chase player variable at rate(T, 5999, 1/s) //chase to max of 99:59
+    Chase player variable at rate(T, 10000, 1/s) //play time counter
     U <= 0 // init completions
     W <= 999 //initial best time
+    
+    Wait( random real(0.25, 2) ) //wait random length to avoid server load/crashes
     
     State <= 1
     
 **Player state 1 - hud creation part 1 - Top text**
 
     
-    Create reset instructions on top - sort 9
-    Visible to: Filtered array(Event player, current:state != 20 )
+    create hud text( //reset instructions
+        Visible to: Filtered array(Event player, current:state != 20 )
+        text: "use ultimate ability = try again"
+        location: top
+        sort order: 9
+    }
 
-    Create start instructions on top - sort 9
-    Visible to: Filtered array(Event player, current:state == 20 )
+    create hud text( //game start instructions
+        Visible to: Filtered array(Event player, current:state == 20 )
+        header: "use ultimate ability -> start"
+        location: top
+        sort order: 9
+        header color: blue
+    }
     
-    Create second display on top - sort 10
+    create hud text( //run timer
+        Visible to: event player
+        header: "{ep:X} sec"
+        location: top
+        sort order: 10
+    }    
 
     Create hud text (
-        Text: "Moderate -> {A}"
-        sort: 12
         visible to: filtered array(ep, cu:state == 70)
+        header: "Moderate -> {A}"
+        sort: 12
+        Location: top
+    )
+
+    Create hud text ( //option select, false
+        visible to: filtered array(ep, state == 80) && O[A]
+        header: "#{A+1}: off"
+        sort: 12
         Location: top
     )
     
+    Create hud text ( //option select, true
+        visible to: filtered array(ep, state == 80) && O[A]
+        header: "#{A+1}: on"
+        sort: 12
+        Location: top
+    )
+    
+    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
+    
+    state <= 2
     
 **Player state 2 - hud creation part 2 - Statistics**
 
     
-    Create records header on left - sort -10
-    Create attempts text - sort -9
-    Create completions text - sort -8
-    Create play time text - sort -7
+    {Create records header on left - sort -10}
+    {Create attempts text - sort -9}
+    {Create completions text - sort -8}
+    {Create "your game time" text - sort -6}
+    
+    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
     
     State <= 3 
     
@@ -421,8 +492,10 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Create "-------" text - sort -2
     Create fastest times text - sort -1
     
-    (repeat x4)
-    Create 1st fastest time text - sort 0-3
+    (repeat 0 to 4)
+    {Create {index}+1 fastest time text - sort {index}}
+    
+    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
     
     State <= 4
     
@@ -431,46 +504,46 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     Create "-------" text - sort 8
     Create "times" text - sort 9
-    (repeat x4)
-    Create 1st most recent completion time - sort 10-13
+    (repeat 0 to 4)
+    {Create {index + 1} most recent completion time - sort 10 + {index}}
     
+    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
+
     State <= 5
     
 **Player state 5 - hud creation part 5 - Checkpoint display**
 
     
     Create effect (
-    Visible to: filtered array (ep, P < gN)
-    Type: Sphere
-    Color: Purple
-    Position: gA[P]
-    Radius: gB[P]
-    Reevaluation ( visible to, position, and scale)
+        Visible to: filtered array (ep, P < gN)
+        Type: Sphere
+        Color: Purple
+        Position: gA[P]
+        Radius: gB[P]
+        Reevaluation ( visible to, position, and scale)
     )
     Create icon (
-    Visible to: filtered array (ep, P < gN)
-    Type: diamond
-    Color: white
-    Position: gA[P]
-    Reevaluation ( visible to, position, and scale)
+        Visible to: filtered array (ep, P < gN)
+        Type: diamond
+        Color: white
+        Position: gA[P]
+        Reevaluation ( visible to, position, and scale)
     )
     
     State <= 9
     
 **Player state 9 - Debug hud creation**
 
-
-    [Make the debug hud with the following visable do condition]
+    {Make the debug hud with the following visable do condition}
     Filtered array (event player, gR)
     
 **Player state 10 - Spawn player and prep waiting state**
 
-    
-    Respawn(ep)
     P <= 999
     X <= 0
+    
+    stop forcing throttle(ep)
     Set status(ep,invincible,9999)
-    Stop forcing throttle(ep)
     
     State <= 11
     
@@ -479,22 +552,30 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Cond: is alive(ep) == true
     Cond: is in spawn room(ep) == true
     
-    Skip if ( team of(ep) != gD[1] ) {
-    	//ep in teleport group
-    	State <= 15
-    	Abort
-    }
-    State <= 20
+    State <= 15
     
 **Player state 15 - Teleport to gather room**
 
-    
-    A <= gC[2]
-    B <= random real(-A,A)
+    //Generate a position in world space inside the rotated rectangle
+    //defined in the gather room settings array.
+    A <= gC[1]
     C <= random real(-A,A)
-    D <= gC[1] + (B,0,C)
-    teleport(ep,D)
-    Set facing(ep,gC[3])
+    A <= gC[2]
+    D <= random real(-A,A)
+    A <= Direction from angles(gC[3] + 90, 0) * C
+    B <= Direction from angles(gC[3], 0) * D
+    D <= gC[0] + A + B
+    
+    teleport(ep,D) //teleport to spot
+    
+    Set facing ( //look towards leaderboard along level plane
+        player: ep
+        direction:
+            direction from angles(
+                horizontal angle: horizontal angle from direction ( direction towards(D, C[4]) )
+                vertical angle: 0
+            )
+    )
     
     State <= 20
     
@@ -502,26 +583,33 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
 
     Cond: button held(event playser, interact) == true
     
-    throttle(event player, stop)
     set status(ep, root, 9999)
     wait .25
     State <= 21 //start spawn in process
     
 **Player state 20 and left spawn - Return player to gather point**
 
-    Cond: Team of(event player) != D[1] //player not in teleport group and spawn doors open
+    Cond: Team of(event player) == D[1] //Gather room belongs to player, so the doors are open and they count as in spawn
     Cond: In spawn(event player) == false
     Cond: gQ == false // don't force it in debug
     
     State <= 15
     
+**player state 20 and in options spot - start options mode**
+
+    Cond: distance between( position of(ep), gC[6]) < 1.5
+    
+    wait 1 abort
+    A <= 0
+    State <= 80
+    
 **player state 20 and in operator spot - start operator mode**
 
 Rule type: Ongoing - each player, team 2, slot 1
 
-    Cond: distance between( position of(ep), gC[8]) < 3 
+    Cond: distance between( position of(ep), gC[7]) < 1.5
     
-    wait 3 abort
+    wait 1 abort
     A <= 1
     State <= 70
 
@@ -546,12 +634,14 @@ Rule type: Ongoing - each player, team 2, slot 1
     Teleport(ep,gA[0]) //race start pos
     Set facing(ep, gC[0]) //race start facing
     P <= 1
-    A <= 0.7 //adjust for feel
-    Big message(3)
-    Wait(A)
-    Big message(2)
-    Wait(A)
-    Big message(1)
+    A <= 0.8 //adjust for feel
+    skip if( O[0] ) {
+        Small message(3)
+        Wait(A)
+        Small message(2)
+        Wait(A)
+        Small message(1)
+    }
     Wait(A)
     
     Clear status(ep, root)
@@ -559,6 +649,9 @@ Rule type: Ongoing - each player, team 2, slot 1
     
     Stop throttle(event player)
     Big message ("Go!")
+    skip if( O[1] ) {
+        Play effect(ep, buff explosion sound, white, position of(ep), 999)
+    }
     
     X <= 0
     Chase player variable(ep, X, 999, 1) // start race timer
@@ -569,6 +662,13 @@ Rule type: Ongoing - each player, team 2, slot 1
 
     Cond: Distance between( pos of(ep), gA[P]) < gB[P] + D[0] )
     
+    A <= gA[P]
+    B <= gB[P]
+    skip if ( O[1] ) {
+        Play effect(ep, ring explosion, white, A,  B * 2.5)
+        Play effect(ep, explosion sound, white, position of(ep), 80)
+    }
+
     P += 1
     Abort if (P < N)
     State <= 40
@@ -576,6 +676,11 @@ Rule type: Ongoing - each player, team 2, slot 1
 **Player State 40 - reach goal**
 
     Cond: Distance between( pos of(Event player), gA[gN]) < gB[gN] + D[0] )
+    
+    C <= gA[P]
+    skip if ( O[1] ) {
+        Play effect(ep, ring explosion sound, white, C, 999)
+    }
     
     P <= 999
     State <= 50
@@ -617,7 +722,7 @@ Rule type: Ongoing - each player, team 2, slot 1
     B <= sorted array(A) //Sort all 6
     R <= B[0:4] //Save the best 5
     
-    Wait 2 //extra wait on completion, adjust for feel
+    Wait 1.5 //extra wait on completion, adjust for feel
     
     State <= 90
     
@@ -643,18 +748,44 @@ Rule type: Ongoing - each player, team 2, slot 1
     
 **Player state 70 and leave operator spot - go back to wait mode**
 
-    Cond: distance between( position of(ep), gC[8]) > 3
+    Cond: distance between( position of(ep), gC[7]) > 3
     
     State <= 20
+
+**Player state 80 and primary fire - increase option index**
+
+    Cond: A < count of(O) - 1
+    Cond: is pressed(ep,primary fire) == true
     
+    A += 1
+    
+**Player state 80 and secondary fire - decrease option index**
+
+    Cond: A > 0
+    Cond: is pressed(ep,secondary fire) == true
+    
+    A -= 1
+    
+**Player state 80 and interact - toggle option**
+
+    Cond: is pressed(ep,interact) == true
+    
+    B <= not( O[A] )
+    O[A] <= B
+    
+**Player state 80 and leave options spot - go back to wait mode**
+
+    Cond: distance between( position of(ep), gC[6]) > 3
+    
+    State <= 20
     
 **Player state 90 - Start reset sequence**
 
     Stop chasing player variable(ep, X)
-    Throttle(Event player, stop)
+    Start forcing throttle(Event player, stop)
     Q += 1 // increase attempt counter
     
-    Wait 1 //wait during reset, adjust for feel
+    Wait 1.5 //wait during reset, adjust for feel
     
     State <= 10
     
