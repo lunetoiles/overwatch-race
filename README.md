@@ -1,6 +1,6 @@
 # Lunetoiles' Overwatch race map framework
 
-**[Click here for workshop codes!](https://github.com/lunetoiles/overwatch-race/tree/master#codes)**
+**[Click here for workshop codes!](#codes)**
 
 This repository hosts a framework and associated tools for creating Overwatch multiplayer race maps created by Lunetoiles. It is inspired by Source engine race maps and designed to be very simple to create new maps for, have many customizeable options, and be easy to add features.
 
