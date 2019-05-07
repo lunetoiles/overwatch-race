@@ -4,6 +4,8 @@
 
 This repository hosts a framework and associated tools for creating Overwatch multiplayer race maps created by Lunetoiles. It is inspired by Source engine race maps and designed to be very simple to create new maps for, have many customizeable options, and be easy to add features.
 
+(Join the Discord server!)[https://discord.gg/MyWwdRM]
+
 ## FAQ
 
 #### How do I start? I'm stuck in the spawn room!
