@@ -2,6 +2,8 @@
 
 **[Click here for workshop codes!](#codes)**
 
+**[Click here to submit a bug report, feature request, or map submission!](https://github.com/lunetoiles/overwatch-race/issues/new/choose)**
+
 This repository hosts a framework and associated tools for creating Overwatch multiplayer race maps created by Lunetoiles. It is inspired by Source engine race maps and designed to be very simple to create new maps for, have many customizeable options, and be easy to add features.
 
 [Join the Discord server!](https://discord.gg/MyWwdRM)
