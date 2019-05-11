@@ -174,7 +174,7 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     Disable built-in game mode anounce
     
 
-    skip if( E != 1 || F > 0 ) {
+    skip if( D[2] != 1 || D[3] > 0 ) {
         //if there is one capture point and no payload, it is a control map
         state <= 16
         abort
