@@ -171,9 +171,17 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
 **Global State 10 - Unlock map**
 
     Disable built-in game mode completion
-    Disable built-in game mode anouncer
+    Disable built-in game mode anounce
     
-    Skip if (D[2] == 0 AND D[3] == 0) { //skip if no capture points for payload, so skirmish maps
+
+    skip if( D[2] != 1 || D[3] > 0 ) {
+        //if there is one capture point and no payload, it is a control map
+        state <= 16
+        abort
+    }
+    
+    Skip if (D[2] == 0 AND D[3] == 0) {
+        //if not control but has objectives, unlock. For Assault, escort, and hybrid.
     	state <= 11
     	Abort
     }
@@ -193,6 +201,7 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     
     Set match time(0)
     Wait 1
+
     Set match time(0)
     Wait 1
         
@@ -237,6 +246,16 @@ Rule type: Ongoing - Each Player
     Destroy text(H)
     Clear status(Frozen, all players)
     
+    State <= 19
+    
+**Global state 16 - unlock control map**
+
+    Set match time(0)
+    Wait 1
+
+    Set match time(0)
+    Wait 1
+        
     State <= 19
     
 **Global state 19 - complete game set up**

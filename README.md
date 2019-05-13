@@ -44,6 +44,9 @@ You can create your own map by using the "Map maker" and "Gather room editor" co
 
 ### Maps
 
+    Map template (v1.0): BR3M6
+    King's Row (v1.0): APBSR
+    Busan (v1.0, Lucio): 1TEFQ
     Hanamura (v0.9): 14CXW
     Eichenwalde (v0.9): 0FNPK
     Junkertown (v0.9): BYKJK
@@ -51,8 +54,8 @@ You can create your own map by using the "Map maker" and "Gather room editor" co
 
 ### Tools
 
-    Map maker v0.3: CSEXD
-    Gather room editor for v0.9: 3TVK1
+    Map maker v1.0: 4N216
+    Gather room editor: 3TVK1
 
 
 ### Early development versions:
