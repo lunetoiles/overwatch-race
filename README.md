@@ -44,6 +44,8 @@ You can create your own map by using the "Map maker" and "Gather room editor" co
 
 ### Maps
 
+    King's Row (v1.0): APBSR
+    Busan (v1.0, Lucio): 1TEFQ
     Hanamura (v0.9): 14CXW
     Eichenwalde (v0.9): 0FNPK
     Junkertown (v0.9): BYKJK
