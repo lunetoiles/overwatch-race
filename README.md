@@ -40,6 +40,11 @@ Just load one of the codes below, set yourself to team 2 slot 1 to make yourself
 
 You can create your own map by using the "Map maker" and "Gather room editor" codes below, and entering the data into the first 4 rules of the workshop mode. Detailed instructions are [on the wiki](https://github.com/lunetoiles/overwatch-race/wiki/How-to-make-a-new-map) (coming soon).
 
+#### Why are most of the maps for Wrecking Ball? Can I make maps for other characters?
+
+You should be able to make maps for any character! I just really like Wrecking Ball, so I haven't made ones for many others or
+done much testing. If you encounter a bug making a map for another character, please [submit a bug report](https://github.com/lunetoiles/overwatch-race/issues/new/choose) and i'll fix it as quickly as possible.
+
 ## Codes
 
 ### Maps
