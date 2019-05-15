@@ -60,7 +60,7 @@ done much testing. If you encounter a bug making a map for another character, pl
 ### Tools
 
     Map maker v1.0: 4N216
-    Gather room editor: J7Q2J
+    Gather room editor: KS8BF
 
 
 ### Early development versions:
