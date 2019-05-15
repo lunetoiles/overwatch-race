@@ -59,7 +59,7 @@ done much testing. If you encounter a bug making a map for another character, pl
 
 ### Tools
 
-    Map maker v1.0: 4N216
+    Map maker v1.0: CB621
     Gather room editor: KS8BF
 
 
