@@ -49,7 +49,6 @@ done much testing. If you encounter a bug making a map for another character, pl
 
 ### Maps
 
-    Map template (v1.0): BR3M6
     King's Row (v1.0): APBSR
     Busan (v1.0, Lucio): 1TEFQ
     Hanamura (v0.9): 14CXW
@@ -61,7 +60,7 @@ done much testing. If you encounter a bug making a map for another character, pl
 
     Map maker v1.0: CB621
     Gather room editor: KS8BF
-
+    Map template (v1.0): BR3M6
 
 ### Early development versions:
 
