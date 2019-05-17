@@ -419,12 +419,12 @@ Rule type: Ongoing - Each Player, Team 2 players
     Create hud text(
         text: "-------"
         Position: left
-        sort: -2
+        sort: -1
     )
     Create hud text(
         text: "fastest times"
         Postion: left
-        sort -1
+        sort -2
     )
     create hud text( //reset instructions
         visible to: Filtered array(all players, cu:state >= 30 && cu:state <= 40 )
