@@ -132,6 +132,16 @@ Rule type: Ongoing - Each Player
     Cond: Q == false //don't run during debug to keep inspector clean
     
     Apply status( Event playser, phased out, 999)
+    
+**Loading message**
+
+Rule type: Ongoing - Each Player
+
+    Cond: state < 10
+    
+    small message("wait, loading...")
+    wait 2.5
+    loop if condition true
 
 ## Global State Machine:
 
@@ -194,11 +204,6 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     E <= D[2] //number of capture points
     F <= D[3] //number of payload checkpoints
     
-    Create hud text "UNLOCKING CHECKPOINT AND PAYLOAD"
-    G <= last text id
-    Create hud text "FIND TEAM 2 PLAYERS" text visible when no one on team 2
-    H <= last text id
-    
     Set match time(0)
     Wait 1
 
@@ -215,9 +220,10 @@ Rule type: Ongoing - Each Player
     
     Set status(Event player, frozen, 999)
     
-    Global state 15 and control points remain - unlock control points
-    Rule type: Ongoing - Each Player //NOTE THE ATYPICAL RULE TYPE
-    Team 2 players
+**Global state 15 and control points remain - unlock control points**
+
+Rule type: Ongoing - Each Player, Team 2 players
+
     Cond: objective index < E
     Cond: On objective(Event player) == false
     
@@ -227,7 +233,7 @@ Rule type: Ongoing - Each Player
     
 **Global state 15 and payload checkpoints remain - advance payload**
 
-Rule type: Ongoing - Each Player
+Rule type: Ongoing - Each Player, Team 2 players
 
     Team 2 players
     Cond: objective index >= E
@@ -242,8 +248,6 @@ Rule type: Ongoing - Each Player
 
     cond: objective index == E + F
     
-    Destroy text(G)
-    Destroy text(H)
     Clear status(Frozen, all players)
     
     State <= 19
@@ -393,7 +397,6 @@ Rule type: Ongoing - Each Player
     State <= 43
     
 **Global state 43 - Create white checkpoint 15-19**
-
     
     (repeat 15 to 19)
     create effect (
@@ -403,6 +406,33 @@ Rule type: Ongoing - Each Player
         position: A[{index}]
         radius: B[{index}]
     )
+    
+    State <= 50
+    
+**Global state 50 - Create static hud text**
+
+    Create hud text(
+        header: "Records"
+        Position: left
+        Sort: -10
+    )
+    Create hud text(
+        text: "-------"
+        Position: left
+        sort: -1
+    )
+    Create hud text(
+        text: "fastest times"
+        Postion: left
+        sort -2
+    )
+    create hud text( //reset instructions
+        visible to: Filtered array(all players, cu:state >= 30 && cu:state <= 40 )
+        text: "use ultimate ability = try again"
+        location: top
+        sort order: 9
+    }
+    
     State <= 90
     
 **Global state 90 - complete global init**
@@ -424,7 +454,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
 
     Cond: gY == true //global init complete
     
-    Disable built in mode respawning(event player) //this doesnft even work
+    Disable built in mode respawning(event player)
     Set respawn max time(ep, 99) //long respawn
     Disallow button(ep, ultimate) //disallow ultimate
         
@@ -445,22 +475,6 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
 **Player state 1 - hud creation part 1 - Top text**
 
-    
-    create hud text( //reset instructions
-        Visible to: Filtered array(Event player, current:state != 20 )
-        text: "use ultimate ability = try again"
-        location: top
-        sort order: 9
-    }
-
-    create hud text( //game start instructions
-        Visible to: Filtered array(Event player, current:state == 20 )
-        header: "use ultimate ability -> start"
-        location: top
-        sort order: 9
-        header color: blue
-    }
-    
     create hud text( //run timer
         Visible to: event player
         header: "{ep:X} sec"
@@ -494,40 +508,22 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     state <= 2
     
 **Player state 2 - hud creation part 2 - Statistics**
-
     
-    {Create records header on left - sort -10}
     {Create attempts text - sort -9}
     {Create completions text - sort -8}
-    {Create "your game time" text - sort -6}
+    {Create "total game time" text - sort -6}
     
     Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
     
     State <= 3 
     
 **Player state 3 - hud creation part 3 - Fastest times**
-
-    
-    Create "-------" text - sort -2
-    Create fastest times text - sort -1
     
     (repeat 0 to 4)
     {Create {index}+1 fastest time text - sort {index}}
     
     Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
     
-    State <= 4
-    
-**Player state 4 - hud creation part 4 - Latest times**
-
-    
-    Create "-------" text - sort 8
-    Create "times" text - sort 9
-    (repeat 0 to 4)
-    {Create {index + 1} most recent completion time - sort 10 + {index}}
-    
-    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
-
     State <= 5
     
 **Player state 5 - hud creation part 5 - Checkpoint display**
@@ -632,7 +628,7 @@ Rule type: Ongoing - each player, team 2, slot 1
     A <= 1
     State <= 70
 
-**Player state 20 - More forcefully teach how to start race**
+**Player state 20 - teach how to start race**
 
     Cond: Q <= 3 //stop displaying message once the player has figured out how to start a couple times
     Cond: gQ == false //don't show it in debug mode to avoide cluttering event window
