@@ -50,7 +50,7 @@ done much testing. If you encounter a bug making a map for another character, pl
 ### Maps
 
     King's Row (v1.0.1): 6G31V
-    Hanamura (v1.0.1): 21N33
+    Hanamura (v1.0.2): MJNYY
     Busan (v1.0, Lucio): 1TEFQ
     Eichenwalde (v0.9): 0FNPK
     Junkertown (v0.9): BYKJK
@@ -60,7 +60,7 @@ done much testing. If you encounter a bug making a map for another character, pl
 
     Map maker v1.0: CB621
     Gather room editor: KS8BF
-    Map template (v1.0.1): N7J4J
+    Map template (v1.0.2): J65RV
 
 ### Early development versions:
 
