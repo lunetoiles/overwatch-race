@@ -862,9 +862,31 @@ Rule type: ongoing - each player, team 2, slot 0
     gR <= not( gR ) //toggle debug text
     state <= 20
     
-**player state 103 - operator action 3 - set debug high score**
+**player state 103 - operator action 3 - start camera**
 
     Cond: is button held(ep, interact) == false
 
-    gW <= 10
+    A <= A[0]
+    start camera(A, A + facing angle(ep),80)
+    
+    state <= 200
+    
+**player state 200 - move camera forward**
+
+    cond: is button held(ep, primary fire) == true
+    
+    A += facing angle(ep)*2
+    
+**player state 200 - move camera backward**
+
+    cond: is button held(ep, secondary fire) == true
+    
+    A += facing angle(ep)*2
+    
+**player state 200 - end camera mode**
+
+    cond: is button held(ep, interact) == true
+    
+    stop camear(ep)
+    
     state <= 20
