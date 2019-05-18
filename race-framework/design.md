@@ -25,7 +25,7 @@
     
     E-H - intermediate values
     
-    I
+    I - moderator action index
     J
     K
     L - Leaderboard
@@ -463,6 +463,12 @@ Rule type: Ongoing - Each Player, Team 2 players
         location: top
         sort order: 9
     }
+    Create hud text ( //moderator text
+        visible to: filtered array(all players, cu:state == 70)
+        header: "Moderate -> {gI}"
+        sort: 12
+        Location: top
+    )
     
     State <= 90
     
@@ -512,13 +518,6 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
         location: top
         sort order: 10
     }    
-
-    Create hud text (
-        visible to: filtered array(ep, cu:state == 70)
-        header: "Moderate -> {A}"
-        sort: 12
-        Location: top
-    )
 
     Create hud text ( //option select, false
         visible to: filtered array(ep, state == 80) && O[A]
@@ -666,7 +665,7 @@ Rule type: ongoing - each player, team 2, slot 0
     Cond: distance between( position of(ep), gC[7]) < 1.5
     
     wait 1 abort
-    A <= 1
+    gI <= 1
     State <= 70
 
 **Player state 20 - teach how to start race**
@@ -784,23 +783,23 @@ Rule type: ongoing - each player, team 2, slot 0
     
 **Player state 70 and primary fire - increase operator action index**
 
-    Cond: A < {total number of moderator actions} //currently 2
+    Cond: gI < {total number of moderator actions} //currently 2
     Cond: is pressed(ep,primary fire) == true
     
-    A += 1
+    gI += 1
     
 **Player state 70 and secondary fire - decrease operator action index**
 
     Cond: A > 1
     Cond: is pressed(ep,secondary fire) == true
     
-    A -= 1
+    gI -= 1
     
 **Player state 70 and interact - run opterator action for index**
 
     Cond: is pressed(ep,interact) == true
     
-    State <= 100 + A
+    State <= 100 + gI
     
 **Player state 70 and leave operator spot - go back to wait mode**
 
