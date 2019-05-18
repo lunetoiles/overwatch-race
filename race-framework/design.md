@@ -869,6 +869,8 @@ Rule type: ongoing - each player, team 2, slot 0
     A <= gA[0]
     start camera(A, A + facing angle(ep),80)
     
+    P <= 0
+    
     state <= 200
     
 **player state 200 - move camera forward**
@@ -883,10 +885,17 @@ Rule type: ongoing - each player, team 2, slot 0
     
     A += facing angle(ep)*2
     
+**player state 200 - advance checkpoint display**
+
+    cond: is button held(ep, crouch) == true
+    
+    P = (P + 1) % N
+    
 **player state 200 - end camera mode**
 
     cond: is button held(ep, interact) == true
     
     stop camear(ep)
+    P <= 999
     
     state <= 20
