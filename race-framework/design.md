@@ -866,7 +866,7 @@ Rule type: ongoing - each player, team 2, slot 0
 
     Cond: is button held(ep, interact) == false
 
-    A <= A[0]
+    A <= gA[0]
     start camera(A, A + facing angle(ep),80)
     
     state <= 200
