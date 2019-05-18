@@ -868,6 +868,7 @@ Rule type: ongoing - each player, team 2, slot 0
 
     A <= gA[0]
     start camera(A, A + facing angle(ep),80)
+    start forcing throttle(ep, stop)
     
     P <= 0
     
@@ -883,19 +884,20 @@ Rule type: ongoing - each player, team 2, slot 0
 
     cond: is button held(ep, secondary fire) == true
     
-    A += facing angle(ep)*2
+    A += facing angle(ep)*-2
     
 **player state 200 - advance checkpoint display**
 
     cond: is button held(ep, crouch) == true
     
-    P = (P + 1) % N
+    P = (P + 1) % gN
     
 **player state 200 - end camera mode**
 
     cond: is button held(ep, interact) == true
     
     stop camear(ep)
+    stop forcing throttle(ep)
     P <= 999
     
     state <= 20
