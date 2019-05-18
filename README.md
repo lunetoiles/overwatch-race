@@ -53,8 +53,8 @@ done much testing. If you encounter a bug making a map for another character, pl
     King's Row (v1.0.2): J2TZG
     Eichenwalde (v1.0.2): Q3495
     Ilios (v1.0.2): ACKJ9
+    Junkertown (v1.0.2): 3MEB9
     Busan (v1.0, Lucio): 1TEFQ
-    Junkertown (v0.9): BYKJK
 
 ### Tools
 
