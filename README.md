@@ -23,8 +23,8 @@ You can press ultimate (default Q) again during a run to restart.
 You can change options here. Optimize was the closest word in the allowed strings. Select options with primary/secondary fire (left and right click) and toggle options with interact (default F).
 
 The options are:
- - Option 1: skip countdown
- - Option 2: mute sound effects
+- Option 1: skip countdown
+- Option 2: mute sound effects
  
 For more detailed instructions, [please read the wiki](https://github.com/lunetoiles/overwatch-race/wiki/Player-options-(optimize)) (coming soon).
 
@@ -49,12 +49,12 @@ done much testing. If you encounter a bug making a map for another character, pl
 
 ### Maps
 
-    King's Row (v1.0.1): 6G31V
     Hanamura (v1.0.2): MJNYY
+    King's Row (v1.0.2): J2TZG
+    Eichenwalde (v1.0.2): Q3495
+    Ilios (v1.0.2): ACKJ9
     Busan (v1.0, Lucio): 1TEFQ
-    Eichenwalde (v0.9): 0FNPK
     Junkertown (v0.9): BYKJK
-    Ilios (v0.9): GRCWZ
 
 ### Tools
 
