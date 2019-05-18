@@ -520,15 +520,8 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     }    
 
     Create hud text ( //option select, false
-        visible to: filtered array(ep, state == 80) && O[A]
-        header: "#{A+1}: off"
-        sort: 12
-        Location: top
-    )
-    
-    Create hud text ( //option select, true
-        visible to: filtered array(ep, state == 80) && O[A]
-        header: "#{A+1}: on"
+        visible to: filtered array(ep, state == 80)
+        header: "optomize {A+1}: O[A]"
         sort: 12
         Location: top
     )
