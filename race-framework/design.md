@@ -879,12 +879,16 @@ Rule type: ongoing - each player, team 2, slot 0
     cond: is button held(ep, primary fire) == true
     
     A += facing angle(ep)*2
+    wait(0.016)
+    loop if condition is true
     
 **player state 200 - move camera backward**
 
     cond: is button held(ep, secondary fire) == true
     
     A += facing angle(ep)*-2
+    wait(0.016)
+    loop if condition is true
     
 **player state 200 - advance checkpoint display**
 
