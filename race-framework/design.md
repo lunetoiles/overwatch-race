@@ -34,7 +34,7 @@
     O - 
     P -
     Q - Debug
-    R - Enable/disable debug hud
+    R - Enable/disable debug hud //currently non-functional
     S
     T
     U
@@ -570,10 +570,11 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     State <= 9
     
-**Player state 9 - Debug hud creation**
+**Player state 9 - finished loading**
 
-    {Make the debug hud with the following visable do condition}
-    Filtered array (event player, gR)
+    Big Message(ep, "Finished Loading")
+    
+    State <= 10
     
 **Player state 10 - Spawn player and prep waiting state**
 
@@ -850,7 +851,8 @@ Rule type: ongoing - each player, team 2, slot 0
 **player state 102 - operator action 2 - toggle debug hud**
 
     Cond: is button held(ep, interact) == false
-
+    
+    //rule currently non-functional due to removed debug text
     gR <= not( gR ) //toggle debug text
     state <= 20
     
