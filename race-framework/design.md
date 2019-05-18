@@ -55,7 +55,7 @@
     J
     K
     L
-    M
+    M - Is moderator?
     N
     O - Option array [
         0: skip countdown
@@ -356,7 +356,38 @@ Rule type: Ongoing - Each Player, Team 2 players
         icon: exclamation mark
     )
     
-    State <= 40
+    State <= 31
+    
+**Global state 31 - Create options and moderator zones**
+
+    Create effect(
+        visble to: All players
+        type: ring
+        color: green
+        position: C[6]
+        size: 1.5
+    )
+    Create effect(
+        visble to: filtered array(all players, current:M)
+        type: ring
+        color: red
+        position: C[7]
+        size: 1.5
+    )
+    Create in-world text(
+        visible to: All players
+        Text: Optimize
+        position: C[6] + (up * 3)
+        scale: 2
+        clipping: clip against surfaces
+    )
+    Create in-world text(
+        visible to: filtered array(all players, current:M)
+        Text: Moderate
+        position: C[7] + (up * 3)
+        scale: 2
+        clipping: clip against surfaces
+    )       
     
 **Global state 40 - Create white checkpoint 1-4**
 
@@ -609,6 +640,17 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Cond: gQ == false // don't force it in debug
     
     State <= 15
+
+**player state 20 and button combo - enable moderator**
+
+Rule type: ongoing - each player, team 2, slot 0
+
+    cond: is button held(ep,interact) == true
+    cond: is button held(ep,crouch) == true
+    
+    wait(10, abort if false)
+    small message("unlocking moderator")
+    M <= true
     
 **player state 20 and in options spot - start options mode**
 
@@ -618,10 +660,9 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     A <= 0
     State <= 80
     
-**player state 20 and in operator spot - start operator mode**
+**player state 20 and in moderator spot - start moderator mode**
 
-Rule type: Ongoing - each player, team 2, slot 1
-
+    Cond: M == true
     Cond: distance between( position of(ep), gC[7]) < 1.5
     
     wait 1 abort
