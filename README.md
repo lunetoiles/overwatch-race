@@ -60,7 +60,7 @@ done much testing. If you encounter a bug making a map for another character, pl
 
     Map maker v1.0: CB621
     Gather room editor: KS8BF
-    Map template (v1.0.2): J65RV
+    Map template (v1.0.2): 8HWD9
 
 ### Early development versions:
 
