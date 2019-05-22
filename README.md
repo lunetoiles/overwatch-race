@@ -1,4 +1,4 @@
-# Overwatch Racing League (aka Lunetoiles' Overwatch race map engine)
+# Lunetoiles' Overwatch race map framework
 
 **[Click here for workshop codes!](#codes)**
 
