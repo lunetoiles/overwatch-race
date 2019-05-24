@@ -52,9 +52,9 @@ done much testing. If you encounter a bug making a map for another character, pl
     Hanamura (v1.0.3): 8BWS1
     King's Row (v1.0.3): GPFWH
     Eichenwalde (v1.0.3): VV8SJ
-    Ilios (v1.0.3): ran out of codes, up in an hour 
-    Junkertown (v1.0.3): ran out of codes, up in an hour
-    Busan (v1.3, Lucio): 5V9RG
+    Ilios (v1.0.3): Z0WRM 
+    Junkertown (v1.0.3): FCD9Y
+    Busan (v1.0.3, Lucio): 5V9RG
 
 ### Tools
 
