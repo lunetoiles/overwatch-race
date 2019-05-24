@@ -49,18 +49,18 @@ done much testing. If you encounter a bug making a map for another character, pl
 
 ### Maps
 
-    Hanamura (v1.0.2): MJNYY
-    King's Row (v1.0.2): J2TZG
-    Eichenwalde (v1.0.2): Q3495
-    Ilios (v1.0.2): ACKJ9
-    Junkertown (v1.0.2): 3MEB9
-    Busan (v1.0, Lucio): 1TEFQ
+    Hanamura (v1.0.3): 8BWS1
+    King's Row (v1.0.3): GPFWH
+    Eichenwalde (v1.0.3): VV8SJ
+    Ilios (v1.0.3): ran out of codes, up in an hour 
+    Junkertown (v1.0.3): ran out of codes, up in an hour
+    Busan (v1.3, Lucio): 5V9RG
 
 ### Tools
 
     Map maker v1.0: CB621
     Gather room editor: KS8BF
-    Map template (v1.0.2): 8HWD9
+    Map template (v1.0.3): SJSB9
 
 ### Early development versions:
 
