@@ -51,8 +51,12 @@
     F -
     G -
     H -
-    I -
-    J -
+    I - Split timer intermediates [
+        0: Previous personal best
+        1: Final run time
+        2: Final run delta
+        3: split update required
+    J - split deltas
     K - current splits
     L - best time splits
     M - Is moderator?
@@ -156,14 +160,16 @@ Rule type: Ongoing - Each Player
     destroy text(Y[4])
     
     Y <= []
+    wait 0.1
     
-    (repeat 0 to 4)
+    (repeat 0 to 4) //there is a wait added between index 3 and 4 to fix misterious issues
     Create hud text(
         visible to: filtered array(ep, R[{index}] != 0)
         Text: "{index+1}: {R[{index}]} sec"
         sort order: {index}
     )
     append Y <= last created text id
+    
     
 **Build speedrun split display**
 
@@ -182,15 +188,18 @@ Rule type: Ongoing - Each Player
     
     (repeat 0 to 3)
     Create hud text(
-        visible to: filtered array(ep, gS[{index}] != 0 && P > gS[{index}])
-        Text: "{index+1}: {L[{index}]} / {K[{index}] / {filtered array("+",K[{index}] > L[{index}])} {K[{index}] - L[{index}]}"
+        visible to: filtered array(ep, gS[{index}] != 0)
+        Text: "{index+1}: {L[index]} /
+            {K[index] /
+            {filtered array("+ {J[index]}", J[index] > 0)} {filtered array({J[index]}, J[index] <= 0)}"
         sort order: {index}
     )
     append Y <= last created text id
     
+    wait 0.1 //wait to fix mysterious issues
     Create hud text(
-        visible to: filtered array(ep, P >= gN)
-        Text: "Final: {W / X / {filtered array("+",X > W} {X - W}"
+        visible to: ep
+        Text: "Final: {I[0] / I[1] / {filtered array("+ {I[2]}", I[2] > 0)} {filtered array({I[2]}, I[2] <= 0)}"
         sort order: 4
     )
     append Y <= last created text id
@@ -508,13 +517,13 @@ Rule type: Ongoing - Each Player, Team 2 players
         sort: -1
     )
     Create hud text(
-        visible to: filtered array(all players, O[1] == false)
+        visible to: filtered array(all players, cu:O[1] == false)
         text: "fastest times"
         Postion: left
         sort -2
     )
     Create hud text(
-        visible to: filtered array(all players, O[1] == true)
+        visible to: filtered array(all players, cu:O[1] == true)
         text: "Checkpoint times
         Postion: left
         sort -2
@@ -719,13 +728,18 @@ Rule type: ongoing - each player, team 2, slot 0
     
 **Player state 22 - spawn into race**
     
-    Teleport(ep,gA[0]) //race start pos
-    Set facing(ep, gC[0]) //race start facing
+    skip if( I[3] != 1) {
+        L <= K
+    }
     
     X <= 0
+    I <= [W,0,0,0]
     K <= []
+    J <= []
     P <= 1
     
+    Teleport(ep,gA[0]) //race start pos
+    Set facing(ep, gC[0]) //race start facing
     
     A <= 0.8 //adjust for feel
     skip if( O[0] ) {
@@ -772,6 +786,7 @@ Rule type: ongoing - each player, team 2, slot 0
     
     skip if( not( is true for any( gS, P == cu) ) ) {
         append K <= X
+        append J last_of(K) - L[ index of value(gS,P) ]
     }
 
     P += 1
@@ -783,7 +798,7 @@ Rule type: ongoing - each player, team 2, slot 0
     Cond: Distance between( pos of(Event player), gA[gN]) < gB[gN] + D[0] )
     
     C <= gA[P]
-    skip if ( O[3] ) {
+    skip if ( O[2] ) {
         Play effect(ep, ring explosion sound, white, C, 999)
     }
     
@@ -792,8 +807,11 @@ Rule type: ongoing - each player, team 2, slot 0
     
 **Player state 50 - Start finish race**
 
-    
     Stop chasing player variable(ep, X) // stop race timer
+    
+    I[1] <= X
+    I[2] <= X - W
+    
     throttle(ep,stop)
     U += 1 //update completion count
     
@@ -877,6 +895,7 @@ Rule type: ongoing - each player, team 2, slot 0
 **Player state 80 and interact - toggle option**
 
     Cond: is pressed(ep,interact) == true
+    Cond: count of(Y) == 5 //hack to prevent text reference leaks
     
     B <= not( O[A] )
     O[A] <= B
