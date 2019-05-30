@@ -50,7 +50,10 @@
     E -
     F -
     G -
-    H -
+    H - Effect reference table [
+        0: checkpoint effect
+        1: checkpoint icon effect
+    ]
     I - Split timer intermediates [
         0: Previous personal best
         1: Final run time
@@ -575,7 +578,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     State <= 1
     
-**Player state 1 - Create player hud and effects**
+**Player state 1 - Create player hud**
 
     create hud text( //run timer
         Visible to: event player
@@ -588,6 +591,11 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     {Create completions text - sort -8}
     {Create "total game time" text - sort -6}
     
+    state <= 2
+    
+**Player state 2 - Create initial player effects**
+
+    H <= []
     Create effect (
         Visible to: filtered array (ep, P < gN)
         Type: Sphere
@@ -596,6 +604,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
         Radius: gB[P]
         Reevaluation ( visible to, position, and scale)
     )
+    append H <= last created effect
     Create icon (
         Visible to: filtered array (ep, P < gN)
         Type: diamond
@@ -603,6 +612,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
         Position: gA[P]
         Reevaluation ( visible to, position, and scale)
     )
+    append H <= last created effect
     
     State <= 9
     
@@ -784,14 +794,69 @@ Rule type: ongoing - each player, team 2, slot 0
         Play effect(ep, explosion sound, white, position of(ep), 80)
     }
     
+    state <= 31
+
+**Player state 31 - update effects**
+
+    skip if( not( O[1] && not(array contains(gS,P)) && array contains(gS, P+1) ) {
+        destory effect ( H[0] )
+        destory icon ( H[1] )
+        Create effect (
+            Visible to: filtered array (ep, P < gN)
+            Type: Sphere
+            Color: blue
+            Position: gA[P]
+            Radius: gB[P]
+            Reevaluation ( visible to, position, and scale)
+        )
+        H[0] <= last created effect
+        Create icon (
+            Visible to: filtered array (ep, P < gN)
+            Type: asteric
+            Color: white
+            Position: gA[P]
+            Reevaluation ( visible to, position, and scale)
+        )
+        H[1] <= last created effect
+    }
+    skip if( not( O[1] && not(array contains(gS,P+1)) && array contains(gS, P) ) {
+        destory effect ( H[0] )
+        destory icon ( H[1] )
+        Create effect (
+            Visible to: filtered array (ep, P < gN)
+            Type: Sphere
+            Color: purple
+            Position: gA[P]
+            Radius: gB[P]
+            Reevaluation ( visible to, position, and scale)
+        )
+        H[0] <= last created effect
+        Create icon (
+            Visible to: filtered array (ep, P < gN)
+            Type: diamond
+            Color: white
+            Position: gA[P]
+            Reevaluation ( visible to, position, and scale)
+        )
+        H[1] <= last created effect
+    }
+    
+    state <= 32
+    
+**Player state 32 - advance checkpoint**
+    
     skip if( not( is true for any( gS, P == cu) ) ) {
         append K <= X
         append J last_of(K) - L[ index of value(gS,P) ]
     }
-
+    
     P += 1
-    Abort if (P < N)
-    State <= 40
+    skip if (P < N) {
+        State <= 40
+        abort
+    }
+    wait 0.016
+    state <= 30
     
 **Player State 40 - reach goal**
 
