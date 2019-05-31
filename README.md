@@ -55,6 +55,10 @@ done much testing. If you encounter a bug making a map for another character, pl
     Ilios (v1.0.3): Z0WRM 
     Junkertown (v1.0.3): JF7Z2
     Busan (v1.0.3, Lucio): 5V9RG
+    
+### Community Maps
+
+    Doomfist on Route 66 by ShinySunlight (v1.0.3): 9RX7B
 
 ### Tools
 
