@@ -884,10 +884,7 @@ Rule type: ongoing - each player, team 2, slot 0
     
 **Player state 60 - Update stats and end race**
 
-    
     U += 1 //increment finishes
-    A <= S[1:4] //Drop oldest time
-    S <= append(S, A) //Add newest time
     A <= append(R, x) // put best 5 times and newest time into intermediate
     B <= sorted array(A) //Sort all 6
     R <= B[0:4] //Save the best 5
