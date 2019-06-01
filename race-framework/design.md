@@ -39,8 +39,8 @@
     T
     U
     V
-    W - Fastest time
-    X -
+    W - Server fastest time
+    X - Server fastest time splits
     Y - Initialization completed
     Z - Global state machine state
 
@@ -56,11 +56,7 @@
         2: checkpoint effect
         3: checkpoint icon effect
     ]
-    I - Split timer intermediates [
-        0: Previous personal best
-        1: Final run time
-        2: Final run delta
-        3: split update required
+    I - 
     J - split deltas
     K - current splits
     L - comparison splits
@@ -204,7 +200,9 @@ Rule type: Ongoing - Each Player
     wait 0.1 //wait to fix mysterious issues
     Create hud text(
         visible to: ep
-        Text: "Final: {I[0] / I[1] / {filtered array("+ {I[2]}", I[2] > 0)} {filtered array({I[2]}, I[2] <= 0)}"
+        Text: "{index+1}: {L[4]} /
+            {K[4] /
+            {filtered array("+ {J[4]}", J[4] > 0)} {filtered array({J[4]}, J[4] <= 0)}"
         sort order: 4
     )
     append Y <= last created text id
@@ -855,8 +853,8 @@ Rule type: ongoing - each player, team 2, slot 0
 
     Stop chasing player variable(ep, X) // stop race timer
     
-    I[1] <= X
-    I[2] <= X - W
+    K[4] <= X
+    J[4] <= X - L[4]
     
     throttle(ep,stop)
     U += 1 //update completion count
@@ -870,11 +868,11 @@ Rule type: ongoing - each player, team 2, slot 0
     
 **Player state 51- Update records**
 
-    
     W <= X //update personal best
-    L <= K //update splits
+    S <= K //update splits
     Skip if ( W >= gW ) { //skip if not new server record
     	gW <= W
+        gX <= S
     	Create big message ("New High Score: {event player} - {W} Sec")
     	State <= 60
     	Abort
