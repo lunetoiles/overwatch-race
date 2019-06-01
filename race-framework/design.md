@@ -69,7 +69,7 @@
     O - Option array [
         0: skip countdown
         1: enable split display
-        2: mute sounds
+        2: user server best splits
     ]
     P - Checkpoint index
     Q - Attempts
@@ -795,19 +795,13 @@ Rule type: ongoing - each player, team 2, slot 0
     A <= 0.8 //adjust for feel
     skip if( O[0] ) {
         Small message(3)
-        skip if (O[2]) {
-            play effect(ep, buff explostion sound, white, position of(ep), 35)
-        }
+        play effect(ep, buff explostion sound, white, position of(ep), 35)
         Wait(A)
         Small message(2)
-        skip if (O[2]) {
-            play effect(ep, buff explostion sound, white, position of(ep), 35)
-        }
+        play effect(ep, buff explostion sound, white, position of(ep), 35)
         Wait(A)
         Small message(1)
-        skip if (O[2]) {
-            play effect(ep, buff explostion sound, white, position of(ep), 35)
-        }
+        play effect(ep, buff explostion sound, white, position of(ep), 35)
     }
     Wait(A)
     
@@ -816,9 +810,7 @@ Rule type: ongoing - each player, team 2, slot 0
     
     Stop throttle(event player)
     Big message ("Go!")
-    skip if( O[2] ) {
-        Play effect(ep, buff explosion sound, white, position of(ep), 999)
-    }
+    Play effect(ep, buff explosion sound, white, position of(ep), 999)
     
     Chase player variable(ep, X, 999, 1) // start race timer
   
@@ -830,10 +822,8 @@ Rule type: ongoing - each player, team 2, slot 0
     
     A <= gA[P]
     B <= gB[P]
-    skip if ( O[2] ) {
-        Play effect(ep, ring explosion, white, A,  B * 2.5)
-        Play effect(ep, explosion sound, white, position of(ep), 80)
-    }
+    Play effect(ep, ring explosion, white, A,  B * 2.5)
+    Play effect(ep, explosion sound, white, position of(ep), 80)
 
     skip if( not( is true for any( gS, P == cu) ) ) {
         append K <= X
@@ -851,9 +841,7 @@ Rule type: ongoing - each player, team 2, slot 0
     Cond: Distance between( pos of(Event player), gA[gN]) < gB[gN] + D[0] )
     
     C <= gA[P]
-    skip if ( O[2] ) {
-        Play effect(ep, ring explosion sound, white, C, 999)
-    }
+    Play effect(ep, ring explosion sound, white, C, 999)
     
     P <= 999
     State <= 50
