@@ -217,12 +217,13 @@ Rule type: Ongoing - Each Player
     Cond: H[1] != H[0]
     
     H[1] <= H[0]
+    
+    destory effect ( H[2] )
+    destory icon ( H[3] )
+    wait 0.1
 
     skip if( not( H[1] == 1 ) ) {
         //normal purple effect
-        destory effect ( H[2] )
-        destory icon ( H[3] )
-        wait 0.1
         Create effect (
             Visible to: filtered array (ep, P < gN)
             Type: Sphere
@@ -246,9 +247,6 @@ Rule type: Ongoing - Each Player
     }
     
     //split checkpoint blue effect
-    destory effect ( H[2] )
-    destory icon ( H[3] )
-    wait 0.1
     Create effect (
         Visible to: filtered array (ep, P < gN)
         Type: Sphere
@@ -843,7 +841,7 @@ Rule type: ongoing - each player, team 2, slot 0
     P += 1
     H[0] <= 1 + (O[1] && array contains(gS,P))
     
-    Abort if (P < N)
+    Abort if (P < gN)
     State <= 40
     
 **Player State 40 - reach goal**
