@@ -651,6 +651,8 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     {Create completions text - sort -8}
     {Create "total game time" text - sort -6}
     
+    wait 0.1 //needed to avoid glitches with stats creation
+    
     state <= 9
     
 **Player state 9 - finished loading**
