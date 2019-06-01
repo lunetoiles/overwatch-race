@@ -56,7 +56,9 @@
         2: checkpoint effect
         3: checkpoint icon effect
     ]
-    I - 
+    I - intermediates and messages [
+        0: stats text state (1 for fastests times, 2 for speedrun splits)
+    ]
     J - split deltas
     K - current splits
     L - comparison splits
@@ -172,12 +174,12 @@ Rule type: Ongoing - Each Player
     append Y <= last created text id
     
     
-**Build speedrun split display**
+**Build stats display text**
 
 Rule type: Ongoing - Each Player
 
     Cond: state >= 10
-    Cond: O[1] == true
+    Cond: (not(O[1]) && I[0] != 1) || (O[1] && I[0] != 2) == true
     
     destroy text(Y[0])
     destroy text(Y[1])
@@ -186,7 +188,23 @@ Rule type: Ongoing - Each Player
     destroy text(Y[4])
     
     Y <= []
+    wait 0.1
     
+    skip if ( O[1] ) {
+        I[0] <= 1
+        (repeat 0 to 4) //there is a wait added between index 3 and 4 to fix misterious issues
+        Create hud text(
+            visible to: filtered array(ep, R[{index}] != 0)
+            Text: "{index+1}: {R[{index}]} sec"
+            sort order: {index}
+        )
+        append Y <= last created text id
+        wait 0.1
+        loop if condition is true
+        abort
+    }
+    
+    I[0] <= 2
     (repeat 0 to 3)
     Create hud text(
         visible to: filtered array(ep, gS[{index}] != 0)
@@ -206,6 +224,9 @@ Rule type: Ongoing - Each Player
         sort order: 4
     )
     append Y <= last created text id
+    
+    wait 0.1
+    loop if condition is true
     
 **Create player effects**
 
@@ -631,6 +652,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     U <= 0 // init completions
     W <= 999 //initial best time
     H <= [1,0,null,null]
+    I <= [0]
     
     Wait( random real(0.25, 2) ) //wait random length to avoid server load/crashes
     
@@ -932,7 +954,6 @@ Rule type: ongoing - each player, team 2, slot 0
 **Player state 80 and interact - toggle option**
 
     Cond: is pressed(ep,interact) == true
-    Cond: count of(Y) == 5 //hack to prevent text reference leaks
     
     B <= not( O[A] )
     O[A] <= B
