@@ -777,10 +777,6 @@ Rule type: ongoing - each player, team 2, slot 0
     
 **Player state 22 - spawn into race**
     
-    skip if( I[3] != 1) { //update splits. wait until now so player can review their splits
-        S <= K
-    }
-    
     L <= S // set to comparison splits to personal best
     skip if( not( O[2] ) ) {
         L <= gX //set comparison to server best if option is set
