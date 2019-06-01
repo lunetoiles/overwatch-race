@@ -63,7 +63,7 @@
         3: split update required
     J - split deltas
     K - current splits
-    L - best time splits
+    L - comparison splits
     M - Is moderator?
     N - top text
     O - Option array [
@@ -74,7 +74,7 @@
     P - Checkpoint index
     Q - Attempts
     R - Best time array
-    S - Last times array
+    S - Best time splits
     T - Play time
     U - finishes
     V - Best time timestamp
@@ -779,8 +779,13 @@ Rule type: ongoing - each player, team 2, slot 0
     
 **Player state 22 - spawn into race**
     
-    skip if( I[3] != 1) {
-        L <= K
+    skip if( I[3] != 1) { //update splits. wait until now so player can review their splits
+        S <= K
+    }
+    
+    L <= S // set to comparison splits to personal best
+    skip if( not( O[2] ) ) {
+        L <= gX //set comparison to server best if option is set
     }
     
     X <= 0
