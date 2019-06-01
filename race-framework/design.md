@@ -764,7 +764,7 @@ Rule type: ongoing - each player, team 2, slot 0
 
 **Player state 20 - teach how to start race**
 
-    Cond: Q <= 3 //stop displaying message once the player has figured out how to start a couple times
+    Cond: Q < 3 //stop displaying message once the player has figured out how to start a couple times
     Cond: gQ == false //don't show it in debug mode to avoide cluttering event window
     
     wait 5 abort
