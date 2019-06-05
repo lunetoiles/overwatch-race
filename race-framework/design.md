@@ -25,7 +25,7 @@
     
     E-H - intermediate values
     
-    I - moderator action index
+    I
     J
     K
     L - Leaderboard
@@ -35,12 +35,12 @@
     P -
     Q - Debug
     R - Enable/disable debug hud //currently non-functional
-    S
+    S - split index array (max size 4)
     T
     U
     V
-    W - Fastest time
-    X -
+    W - Server fastest time
+    X - Server fastest time splits
     Y - Initialization completed
     Z - Global state machine state
 
@@ -50,27 +50,35 @@
     E -
     F -
     G -
-    H -
-    I
-    J
-    K
-    L
+    H - Effect reference table [
+        0: Requested checkpoint type
+        1: Current checkpoint type
+        2: checkpoint effect
+        3: checkpoint icon effect
+    ]
+    I - intermediates and messages [
+        0: stats text state (1 for fastests times, 2 for speedrun splits)
+    ]
+    J - split deltas
+    K - current splits
+    L - comparison splits
     M - Is moderator?
-    N
+    N - top text
     O - Option array [
         0: skip countdown
-        1: mute sounds
+        1: enable split display
+        2: user server best splits
     ]
     P - Checkpoint index
     Q - Attempts
     R - Best time array
-    S - Last times array
+    S - Best time splits
     T - Play time
     U - finishes
-    V - 
+    V - Best time timestamp
     W - Best time
     X - Run time
-    Y -
+    Y - records text
     Z - Main loop state
 
 ## Miscellaneous rules
@@ -122,8 +130,6 @@ Rule type: Ongoing - Global
     wait 5
     Loop
 
-  
-
 **Make players phase**
 
 Rule type: Ongoing - Each Player
@@ -142,6 +148,143 @@ Rule type: Ongoing - Each Player
     small message("wait, loading...")
     wait 2.5
     loop if condition true
+    
+**Build latest time display**
+
+Rule type: Ongoing - Each Player
+
+    Cond: state >= 10
+    Cond: O[1] == false
+    
+    destroy text(Y[0])
+    destroy text(Y[1])
+    destroy text(Y[2])
+    destroy text(Y[3])
+    destroy text(Y[4])
+    
+    Y <= []
+    wait 0.1
+    
+    (repeat 0 to 4) //there is a wait added between index 3 and 4 to fix misterious issues
+    Create hud text(
+        visible to: filtered array(ep, R[{index}] != 0)
+        Text: "{index+1}: {R[{index}]} sec"
+        sort order: {index}
+    )
+    append Y <= last created text id
+    
+    
+**Build stats display text**
+
+Rule type: Ongoing - Each Player
+
+    Cond: state >= 10
+    Cond: (not(O[1]) && I[0] != 1) || (O[1] && I[0] != 2) == true
+    
+    destroy text(Y[0])
+    destroy text(Y[1])
+    destroy text(Y[2])
+    destroy text(Y[3])
+    destroy text(Y[4])
+    
+    Y <= []
+    wait 0.1
+    
+    skip if ( O[1] ) {
+        I[0] <= 1
+        (repeat 0 to 4) //there is a wait added between index 3 and 4 to fix misterious issues
+        Create hud text(
+            visible to: filtered array(ep, R[{index}] != 0)
+            Text: "{index+1}: {R[{index}]} sec"
+            sort order: {index}
+        )
+        append Y <= last created text id
+        wait 0.1
+        loop if condition is true
+        abort
+    }
+    
+    I[0] <= 2
+    (repeat 0 to 3)
+    Create hud text(
+        visible to: filtered array(ep, gS[{index}] != 0)
+        Text: "{index+1}: {L[index]} /
+            {K[index] /
+            {filtered array("+ {J[index]}", J[index] > 0)} {filtered array({J[index]}, J[index] <= 0)}"
+        sort order: {index}
+    )
+    append Y <= last created text id
+    
+    wait 0.1 //wait to fix mysterious issues
+    Create hud text(
+        visible to: ep
+        Text: "{index+1}: {L[4]} /
+            {K[4] /
+            {filtered array("+ {J[4]}", J[4] > 0)} {filtered array({J[4]}, J[4] <= 0)}"
+        sort order: 4
+    )
+    append Y <= last created text id
+    
+    wait 0.1
+    loop if condition is true
+    
+**Create player effects**
+
+Rule type: Ongoing - Each Player
+
+    Cond: state >= 10
+    Cond: H[1] != H[0]
+    
+    H[1] <= H[0]
+    
+    destory effect ( H[2] )
+    destory icon ( H[3] )
+    wait 0.1
+
+    skip if( not( H[1] == 1 ) ) {
+        //normal purple effect
+        Create effect (
+            Visible to: filtered array (ep, P < gN)
+            Type: Sphere
+            Color: blue
+            Position: gA[P]
+            Radius: gB[P]
+            Reevaluation ( visible to, position, and scale)
+        )
+        H[2] <= last created effect
+        Create icon (
+            Visible to: filtered array (ep, P < gN)
+            Type: asteric
+            Color: white
+            Position: gA[P]
+            Reevaluation ( visible to, position, and scale)
+        )
+        H[3] <= last created effect
+        wait 0.1
+        loop if condition is true
+        abort
+    }
+    
+    //split checkpoint blue effect
+    Create effect (
+        Visible to: filtered array (ep, P < gN)
+        Type: Sphere
+        Color: purple
+        Position: gA[P]
+        Radius: gB[P]
+        Reevaluation ( visible to, position, and scale)
+    )
+    H[2] <= last created effect
+    Create icon (
+        Visible to: filtered array (ep, P < gN)
+        Type: diamond
+        Color: white
+        Position: gA[P]
+        Reevaluation ( visible to, position, and scale)
+    )
+    H[3] <= last created effect
+    wait 0.1
+    loop if condition is true
 
 ## Global State Machine:
 
@@ -176,6 +319,8 @@ All below rules have an implied condition of `"gZ == {state in rule name}"`
     Q <= {true/false} //debug state
     
     D <= [{config settings}]
+    S <= [{split locations}]
+    
     State <= 10
     
 **Global State 10 - Unlock map**
@@ -453,22 +598,23 @@ Rule type: Ongoing - Each Player, Team 2 players
         sort: -1
     )
     Create hud text(
+        visible to: filtered array(all players, cu:O[1] == false)
         text: "fastest times"
         Postion: left
         sort -2
     )
+    Create hud text(
+        visible to: filtered array(all players, cu:O[1] == true)
+        text: "Checkpoint times
+        Postion: left
+        sort -2
+    )
     create hud text( //reset instructions
-        visible to: Filtered array(all players, cu:state >= 30 && cu:state <= 40 )
+        visible to: All Players
         text: "use ultimate ability = try again"
         location: top
         sort order: 9
     }
-    Create hud text ( //moderator text
-        visible to: filtered array(all players, cu:state == 70)
-        header: "Moderate -> {gI}"
-        sort: 12
-        Location: top
-    )
     
     State <= 90
     
@@ -505,70 +651,29 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     Chase player variable at rate(T, 10000, 1/s) //play time counter
     U <= 0 // init completions
     W <= 999 //initial best time
+    H <= [1,0,null,null]
+    I <= [0]
     
     Wait( random real(0.25, 2) ) //wait random length to avoid server load/crashes
     
     State <= 1
     
-**Player state 1 - hud creation part 1 - Top text**
+**Player state 1 - Create player hud**
 
     create hud text( //run timer
         Visible to: event player
         header: "{ep:X} sec"
         location: top
         sort order: 10
-    }    
-
-    Create hud text ( //option select, false
-        visible to: filtered array(ep, state == 80)
-        header: "optomize {A+1}: O[A]"
-        sort: 12
-        Location: top
-    )
-    
-    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
-    
-    state <= 2
-    
-**Player state 2 - hud creation part 2 - Statistics**
+    }
     
     {Create attempts text - sort -9}
     {Create completions text - sort -8}
     {Create "total game time" text - sort -6}
     
-    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
+    wait 0.1 //needed to avoid glitches with stats creation
     
-    State <= 3 
-    
-**Player state 3 - hud creation part 3 - Fastest times**
-    
-    (repeat 0 to 4)
-    {Create {index}+1 fastest time text - sort {index}}
-    
-    Wait( random real(0.25, .50) ) //wait random length to avoid server load/crashes
-    
-    State <= 5
-    
-**Player state 5 - hud creation part 5 - Checkpoint display**
-
-    
-    Create effect (
-        Visible to: filtered array (ep, P < gN)
-        Type: Sphere
-        Color: Purple
-        Position: gA[P]
-        Radius: gB[P]
-        Reevaluation ( visible to, position, and scale)
-    )
-    Create icon (
-        Visible to: filtered array (ep, P < gN)
-        Type: diamond
-        Color: white
-        Position: gA[P]
-        Reevaluation ( visible to, position, and scale)
-    )
-    
-    State <= 9
+    state <= 9
     
 **Player state 9 - finished loading**
 
@@ -579,7 +684,8 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
 **Player state 10 - Spawn player and prep waiting state**
 
     P <= 999
-    X <= 0
+    
+    H[0] <= 1 + (O[1] && array contains(gS,P))
     
     stop forcing throttle(ep)
     Set status(ep,invincible,9999)
@@ -618,9 +724,9 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     State <= 20
     
-**Player state 20 and interact pressed - Initialize race**
+**Player state 20 and ultimate pressed - Initialize race**
 
-    Cond: button held(event playser, interact) == true
+    Cond: button held(event playser, ultimate) == true
     
     set status(ep, root, 9999)
     wait .25
@@ -651,6 +757,13 @@ Rule type: ongoing - each player, team 2, slot 0
     
     wait 1 abort
     A <= 0
+    Create hud text ( //option select, false
+        visible to: ep
+        header: "optomize {A+1}: O[A]"
+        sort: 12
+        Location: top
+    )
+    N <= last created text id
     State <= 80
     
 **player state 20 and in moderator spot - start moderator mode**
@@ -659,12 +772,19 @@ Rule type: ongoing - each player, team 2, slot 0
     Cond: distance between( position of(ep), gC[7]) < 1.5
     
     wait 1 abort
-    gI <= 1
+    A <= 1
+    Create hud text ( //moderator text
+        visible to: event player
+        header: "Moderate -> {A}"
+        sort: 12
+        Location: top
+    )
+    N <= last created text id
     State <= 70
 
 **Player state 20 - teach how to start race**
 
-    Cond: Q <= 3 //stop displaying message once the player has figured out how to start a couple times
+    Cond: Q < 3 //stop displaying message once the player has figured out how to start a couple times
     Cond: gQ == false //don't show it in debug mode to avoide cluttering event window
     
     wait 5 abort
@@ -678,18 +798,31 @@ Rule type: ongoing - each player, team 2, slot 0
     State <= 22
     
 **Player state 22 - spawn into race**
-
+    
+    L <= S // set to comparison splits to personal best
+    skip if( not( O[2] ) ) {
+        L <= gX //set comparison to server best if option is set
+    }
+    
+    X <= 0
+    I <= [W,0,0,0]
+    K <= []
+    J <= []
+    P <= 1
     
     Teleport(ep,gA[0]) //race start pos
     Set facing(ep, gC[0]) //race start facing
-    P <= 1
+    
     A <= 0.8 //adjust for feel
     skip if( O[0] ) {
         Small message(3)
+        play effect(ep, buff explostion sound, white, position of(ep), 35)
         Wait(A)
         Small message(2)
+        play effect(ep, buff explostion sound, white, position of(ep), 35)
         Wait(A)
         Small message(1)
+        play effect(ep, buff explostion sound, white, position of(ep), 35)
     }
     Wait(A)
     
@@ -698,11 +831,8 @@ Rule type: ongoing - each player, team 2, slot 0
     
     Stop throttle(event player)
     Big message ("Go!")
-    skip if( O[1] ) {
-        Play effect(ep, buff explosion sound, white, position of(ep), 999)
-    }
+    Play effect(ep, buff explosion sound, white, position of(ep), 999)
     
-    X <= 0
     Chase player variable(ep, X, 999, 1) // start race timer
   
     State <= 30
@@ -713,13 +843,18 @@ Rule type: ongoing - each player, team 2, slot 0
     
     A <= gA[P]
     B <= gB[P]
-    skip if ( O[1] ) {
-        Play effect(ep, ring explosion, white, A,  B * 2.5)
-        Play effect(ep, explosion sound, white, position of(ep), 80)
-    }
+    Play effect(ep, ring explosion, white, A,  B * 2.5)
+    Play effect(ep, explosion sound, white, position of(ep), 80)
 
+    skip if( not( is true for any( gS, P == cu) ) ) {
+        append K <= X
+        append J last_of(K) - L[ index of value(gS,P) ]
+    }
+    
     P += 1
-    Abort if (P < N)
+    H[0] <= 1 + (O[1] && array contains(gS,P))
+    
+    Abort if (P < gN)
     State <= 40
     
 **Player State 40 - reach goal**
@@ -727,17 +862,18 @@ Rule type: ongoing - each player, team 2, slot 0
     Cond: Distance between( pos of(Event player), gA[gN]) < gB[gN] + D[0] )
     
     C <= gA[P]
-    skip if ( O[1] ) {
-        Play effect(ep, ring explosion sound, white, C, 999)
-    }
+    Play effect(ep, ring explosion sound, white, C, 999)
     
     P <= 999
     State <= 50
     
 **Player state 50 - Start finish race**
 
-    
     Stop chasing player variable(ep, X) // stop race timer
+    
+    K[4] <= X
+    J[4] <= X - L[4]
+    
     throttle(ep,stop)
     U += 1 //update completion count
     
@@ -750,10 +886,11 @@ Rule type: ongoing - each player, team 2, slot 0
     
 **Player state 51- Update records**
 
-    
     W <= X //update personal best
+    S <= K //update splits
     Skip if ( W >= gW ) { //skip if not new server record
     	gW <= W
+        gX <= S
     	Create big message ("New High Score: {event player} - {W} Sec")
     	State <= 60
     	Abort
@@ -763,10 +900,7 @@ Rule type: ongoing - each player, team 2, slot 0
     
 **Player state 60 - Update stats and end race**
 
-    
     U += 1 //increment finishes
-    A <= S[1:4] //Drop oldest time
-    S <= append(S, A) //Add newest time
     A <= append(R, x) // put best 5 times and newest time into intermediate
     B <= sorted array(A) //Sort all 6
     R <= B[0:4] //Save the best 5
@@ -777,28 +911,30 @@ Rule type: ongoing - each player, team 2, slot 0
     
 **Player state 70 and primary fire - increase operator action index**
 
-    Cond: gI < {total number of moderator actions} //currently 2
+    Cond: A < {total number of moderator actions} //currently 3
     Cond: is pressed(ep,primary fire) == true
     
-    gI += 1
+    A += 1
     
 **Player state 70 and secondary fire - decrease operator action index**
 
     Cond: A > 1
     Cond: is pressed(ep,secondary fire) == true
     
-    gI -= 1
+    A -= 1
     
 **Player state 70 and interact - run opterator action for index**
 
     Cond: is pressed(ep,interact) == true
     
-    State <= 100 + gI
+    destory text(N)
+    State <= 100 + A
     
 **Player state 70 and leave operator spot - go back to wait mode**
 
     Cond: distance between( position of(ep), gC[7]) > 3
     
+    destory text(N)
     State <= 20
 
 **Player state 80 and primary fire - increase option index**
@@ -825,7 +961,8 @@ Rule type: ongoing - each player, team 2, slot 0
 **Player state 80 and leave options spot - go back to wait mode**
 
     Cond: distance between( position of(ep), gC[6]) > 3
-    
+
+    destory text(N)
     State <= 20
     
 **Player state 90 - Start reset sequence**

@@ -73,3 +73,4 @@ done much testing. If you encounter a bug making a map for another character, pl
     V0.41 - 5W6AG
     V0.5 - 04CE8
     V0.7 - Test map - YJ9E6
+    v1.1 in progress development - 82KWH
