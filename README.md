@@ -49,10 +49,10 @@ done much testing. If you encounter a bug making a map for another character, pl
 
 ### Maps
 
-    Hanamura (v1.0.3): 8BWS1
-    King's Row (v1.0.3): BKRDH
-    Eichenwalde (v1.0.3): VV8SJ
-    Ilios (v1.0.3): Z0WRM 
+    Hanamura (v1.1): T1Q9Q
+    King's Row (v1.1): 076DC
+    Eichenwalde (v1.1): C2NG9
+    Ilios (v1.1):  HQHW8
     Junkertown (v1.0.3): JF7Z2
     Busan (v1.0.3, Lucio): 5V9RG
     
@@ -73,4 +73,3 @@ done much testing. If you encounter a bug making a map for another character, pl
     V0.41 - 5W6AG
     V0.5 - 04CE8
     V0.7 - Test map - YJ9E6
-    v1.1 in progress development - 82KWH
