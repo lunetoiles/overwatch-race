@@ -54,7 +54,7 @@ done much testing. If you encounter a bug making a map for another character, pl
     Eichenwalde (v1.1): C2NG9
     Ilios (v1.1):  HQHW8
     Junkertown (v1.1.1): TYCXV
-    Busan (v1.0.3, Lucio): 5V9RG
+    Busan (v1.1.1, Lucio): JKHHJ
     
 ### Community Maps
 
