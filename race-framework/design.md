@@ -483,7 +483,7 @@ Rule type: Ongoing - Each Player, Team 2 players
         position: A[S[index]]
         radius: B[S[index]]
     )
-    State <= 41
+    State <= 40
     
 **Global state 40 - Create white checkpoint 1-4**
 
@@ -629,7 +629,7 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
 **Player state 2 - Create effects**
 
     Create effect (
-        Visible to: filtered array (ep, P < gN && not(O[1] || array contains(gS,P)) )
+        Visible to: filtered array (ep, P < gN && not(O[1] && array contains(gS,P)) )
         Type: Sphere
         Color: blue
         Position: gA[P]
