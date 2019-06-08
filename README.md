@@ -53,7 +53,7 @@ done much testing. If you encounter a bug making a map for another character, pl
     King's Row (v1.1.1): GVGPZ
     Eichenwalde (v1.1): C2NG9
     Ilios (v1.1):  HQHW8
-    Junkertown (v1.0.3): JF7Z2
+    Junkertown (v1.1.1): TYCXV
     Busan (v1.0.3, Lucio): 5V9RG
     
 ### Community Maps
