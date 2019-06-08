@@ -49,8 +49,8 @@ done much testing. If you encounter a bug making a map for another character, pl
 
 ### Maps
 
-    Hanamura (v1.1): T1Q9Q
-    King's Row (v1.1): 076DC
+    Hanamura (v1.1.1): G92H5
+    King's Row (v1.1.1): GVGPZ
     Eichenwalde (v1.1): C2NG9
     Ilios (v1.1):  HQHW8
     Junkertown (v1.0.3): JF7Z2
