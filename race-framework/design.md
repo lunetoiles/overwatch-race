@@ -50,12 +50,7 @@
     E -
     F -
     G -
-    H - Effect reference table [
-        0: Requested checkpoint type
-        1: Current checkpoint type
-        2: checkpoint effect
-        3: checkpoint icon effect
-    ]
+    H - 
     I - intermediates and messages [
         0: stats text state (1 for fastests times, 2 for speedrun splits)
     ]
@@ -228,64 +223,6 @@ Rule type: Ongoing - Each Player
     wait 0.1
     loop if condition is true
     
-**Create player effects**
-
-Rule type: Ongoing - Each Player
-
-    Cond: state >= 10
-    Cond: H[1] != H[0]
-    
-    H[1] <= H[0]
-    
-    destory effect ( H[2] )
-    destory icon ( H[3] )
-    wait 0.1
-
-    skip if( not( H[1] == 1 ) ) {
-        //normal purple effect
-        Create effect (
-            Visible to: filtered array (ep, P < gN)
-            Type: Sphere
-            Color: blue
-            Position: gA[P]
-            Radius: gB[P]
-            Reevaluation ( visible to, position, and scale)
-        )
-        H[2] <= last created effect
-        Create icon (
-            Visible to: filtered array (ep, P < gN)
-            Type: asteric
-            Color: white
-            Position: gA[P]
-            Reevaluation ( visible to, position, and scale)
-        )
-        H[3] <= last created effect
-        wait 0.1
-        loop if condition is true
-        abort
-    }
-    
-    //split checkpoint blue effect
-    Create effect (
-        Visible to: filtered array (ep, P < gN)
-        Type: Sphere
-        Color: purple
-        Position: gA[P]
-        Radius: gB[P]
-        Reevaluation ( visible to, position, and scale)
-    )
-    H[2] <= last created effect
-    Create icon (
-        Visible to: filtered array (ep, P < gN)
-        Type: diamond
-        Color: white
-        Position: gA[P]
-        Reevaluation ( visible to, position, and scale)
-    )
-    H[3] <= last created effect
-    wait 0.1
-    loop if condition is true
-
 ## Global State Machine:
 
 All below rules are of rule type "Ongoing - Global" unless otherwise noted.
@@ -532,7 +469,21 @@ Rule type: Ongoing - Each Player, Team 2 players
         position: C[7] + (up * 3)
         scale: 2
         clipping: clip against surfaces
-    )       
+    )
+    
+    state <= 32
+    
+**Global state 32 - Create split checkpoints**
+
+    (repeat 0 to 3)
+    create effect (
+        visible to: filtered array( all players, cu:O[1] == true && cu:P == S[index] )
+        type: sphere
+        color: blue
+        position: A[S[index]]
+        radius: B[S[index]]
+    )
+    State <= 41
     
 **Global state 40 - Create white checkpoint 1-4**
 
@@ -673,7 +624,28 @@ All below rules have an implied condition of `"ep:Z == {state in rule name}"`
     
     wait 0.1 //needed to avoid glitches with stats creation
     
+    state <= 2
+    
+**Player state 2 - Create effects**
+
+    Create effect (
+        Visible to: filtered array (ep, P < gN && not(O[1] || array contains(gS,P)) )
+        Type: Sphere
+        Color: blue
+        Position: gA[P]
+        Radius: gB[P]
+        Reevaluation ( visible to, position, and scale)
+    )
+    Create icon (
+        Visible to: filtered array (ep, P < gN)
+        Type: asteric
+        Color: white
+        Position: gA[P]
+        Reevaluation ( visible to, position, and scale)
+    )
+    
     state <= 9
+
     
 **Player state 9 - finished loading**
 
