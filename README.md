@@ -69,7 +69,7 @@ done much testing. If you encounter a bug making a map for another character, pl
 ### Early development versions:
 
     V0.1 - GEW3Z
-    V0.4 - 5VZD2 +
-    V0.41 - 5W6AG
-    V0.5 - 04CE8
-    V0.7 - Test map - YJ9E6
+    V0.4 - F2AAR
+    V0.41 - THVX2
+    V0.5 - G70YE
+    V0.7 - Test map - 1KNPV
