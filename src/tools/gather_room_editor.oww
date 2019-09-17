@@ -1,0 +1,851 @@
+rule("Game start config - edit here")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Start Forcing Spawn Room(All Teams, 0);
+		Set Match Time(0);
+		Wait(1, Ignore Condition);
+		Set Match Time(0);
+		Wait(1, Ignore Condition);
+		Pause Match Time;
+		Disable Built-In Game Mode Completion;
+	}
+}
+
+rule("state 0 - start")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 0;
+	}
+
+	actions
+	{
+		Set Global Variable(Z, 2);
+	}
+}
+
+rule("state 2 - initial gather room config")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 2;
+	}
+
+	actions
+	{
+		Set Global Variable(C, Empty Array);
+		Modify Global Variable(C, Append To Array, Vector(0, 0, 0));
+		Modify Global Variable(C, Append To Array, 3);
+		Modify Global Variable(C, Append To Array, 3);
+		Modify Global Variable(C, Append To Array, 0);
+		Modify Global Variable(C, Append To Array, Vector(0, 0, 0));
+		Modify Global Variable(C, Append To Array, 1);
+		Modify Global Variable(C, Append To Array, Vector(0, 0, 0));
+		Modify Global Variable(C, Append To Array, Vector(0, 0, 0));
+		Set Global Variable(Z, 3);
+	}
+}
+
+rule("State 3 - editor initialization")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 3;
+	}
+
+	actions
+	{
+		Set Global Variable(P, 0);
+		Set Global Variable(M, Value In Array(Global Variable(A), 0));
+		Set Global Variable(Q, 1);
+		Set Global Variable(X, 1);
+		Wait(0.500, Ignore Condition);
+		Set Global Variable(E, 1);
+		Set Global Variable(Z, 4);
+	}
+}
+
+rule("State 4 - create world effects part 1")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 4;
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Sphere, White, Value In Array(Global Variable(C), 0), 0.250, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Red, Global Variable(S), 0.250, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Blue, Global Variable(T), 0.250, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Red, Global Variable(U), 0.250, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Sphere, Blue, Global Variable(V), 0.250, Visible To Position and Radius);
+		Set Global Variable(Z, 5);
+	}
+}
+
+rule("state 6 - Create hud text")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 6;
+	}
+
+	actions
+	{
+		Create HUD Text(All Players(All Teams), String("{0}: {1}", String("Current", Null, Null, Null), String("{0} m", Global Variable(Q),
+			Null, Null), Null), Null, Null, Top, 9, White, White, White, Visible To and String);
+		Create HUD Text(All Players(All Teams), String("{0}: {1}", String("#{0}", Global Variable(P), Null, Null), Global Variable(M),
+			Null), Null, Null, Top, 10, White, White, White, Visible To and String);
+		Create HUD Text(Filtered Array(All Players(All Teams), Compare(Global Variable(E), ==, 1)), String("{0} / {1}", String("Left",
+			Null, Null, Null), String("Right", Null, Null, Null), Null), Null, Null, Top, 11, White, White, White, Visible To and String);
+		Create HUD Text(Filtered Array(All Players(All Teams), Compare(Global Variable(E), ==, 2)), String("{0} / {1}", String("Forward",
+			Null, Null, Null), String("Backward", Null, Null, Null), Null), Null, Null, Top, 11, White, White, White,
+			Visible To and String);
+		Create HUD Text(Filtered Array(All Players(All Teams), Compare(Global Variable(E), ==, 3)), String("{0} / {1}", String("Up", Null,
+			Null, Null), String("Down", Null, Null, Null), Null), Null, Null, Top, 11, White, White, White, Visible To and String);
+		Create HUD Text(Filtered Array(All Players(All Teams), Compare(Global Variable(E), ==, 4)), String("{0}: {1}", String("Distance",
+			Null, Null, Null), String("{0} m", Global Variable(M), Null, Null), Null), Null, Null, Top, 11, White, White, White,
+			Visible To and String);
+		Wait(0.250, Ignore Condition);
+		Set Global Variable(Z, 10);
+	}
+}
+
+rule("any position editor and interact - place position at player")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) >= 1;
+		Global Variable(E) <= 3;
+		Is Button Held(Event Player, Interact) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(M, Position Of(Event Player));
+	}
+}
+
+rule("editor 1 and primary fire - move node left")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 1;
+		Is Button Held(Event Player, Primary Fire) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(I, Horizontal Facing Angle Of(Event Player));
+		Set Global Variable(J, Add(Global Variable(I), 90));
+		Set Global Variable(K, Direction From Angles(Global Variable(J), 0));
+		Modify Global Variable(M, Add, Multiply(Global Variable(K), Global Variable(Q)));
+		Wait(0.250, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
+rule("editor 1 and secondary fire - move node right")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 1;
+		Is Button Held(Event Player, Secondary Fire) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(I, Horizontal Facing Angle Of(Event Player));
+		Set Global Variable(J, Add(Global Variable(I), -90.000));
+		Set Global Variable(K, Direction From Angles(Global Variable(J), 0));
+		Modify Global Variable(M, Add, Multiply(Global Variable(K), Global Variable(Q)));
+		Wait(0.250, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
+rule("editor 1 and ability 1 - switch to forward/back edit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 1;
+		Is Button Held(Event Player, Ability 1) == True;
+	}
+
+	actions
+	{
+		Wait(0.250, Ignore Condition);
+		Loop If Condition Is True;
+		Set Global Variable(E, 2);
+	}
+}
+
+rule("editor 2 and primary fire - move node forward")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 2;
+		Is Button Held(Event Player, Primary Fire) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(I, Horizontal Facing Angle Of(Event Player));
+		Set Global Variable(K, Direction From Angles(Global Variable(I), 0));
+		Modify Global Variable(M, Add, Multiply(Global Variable(K), Global Variable(Q)));
+		Wait(0.250, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
+rule("editor 2 and secondary fire - move node backward")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 2;
+		Is Button Held(Event Player, Secondary Fire) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(I, Horizontal Facing Angle Of(Event Player));
+		Set Global Variable(K, Direction From Angles(Global Variable(I), 0));
+		Modify Global Variable(M, Subtract, Multiply(Global Variable(K), Global Variable(Q)));
+		Wait(0.250, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
+rule("editor 3 and primary fire - move node up")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 3;
+		Is Button Held(Event Player, Primary Fire) == True;
+	}
+
+	actions
+	{
+		Modify Global Variable(M, Add, Multiply(Up, Global Variable(Q)));
+		Wait(0.250, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
+rule("editor 3 and secondary fire - move node down")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 3;
+		Is Button Held(Event Player, Secondary Fire) == True;
+	}
+
+	actions
+	{
+		Modify Global Variable(M, Add, Multiply(Down, Global Variable(Q)));
+		Wait(0.250, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
+rule("editor 4 and primary fire - increase size")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 4;
+		Is Button Held(Event Player, Primary Fire) == True;
+	}
+
+	actions
+	{
+		Modify Global Variable(M, Add, Global Variable(Q));
+		Wait(0.250, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
+rule("editor 4 and secondary fire - decrease size")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 4;
+		Is Button Held(Event Player, Secondary Fire) == True;
+	}
+
+	actions
+	{
+		Modify Global Variable(M, Subtract, Global Variable(Q));
+		Wait(0.250, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
+rule("editor 5 and primary fire - set angle facing")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 5;
+		Is Button Held(Event Player, Primary Fire) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(M, Horizontal Facing Angle Of(Event Player));
+	}
+}
+
+rule("state 91  - go to next edit mode")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 91;
+		Is Button Held(Event Player, Ultimate) == False;
+	}
+
+	actions
+	{
+		Set Global Variable(P, Modulo(Add(Global Variable(P), 1), Count Of(Global Variable(C))));
+		Set Global Variable(M, Value In Array(Global Variable(C), Global Variable(P)));
+		Set Global Variable(Z, Global Variable(Y));
+	}
+}
+
+rule("keep gather config table updated")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) >= 10;
+		Global Variable(Z) <= 20;
+		Global Variable(M) != Value In Array(Global Variable(C), Global Variable(P));
+	}
+
+	actions
+	{
+		Set Global Variable At Index(C, Global Variable(P), Global Variable(M));
+	}
+}
+
+rule("Change edit size")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Jump) == True;
+	}
+
+	actions
+	{
+		Skip If(Not(Compare(Global Variable(Q), ==, 1)), 2);
+		Set Global Variable(Q, 0.300);
+		Abort;
+		Skip If(Not(Compare(Global Variable(Q), ==, 0.300)), 2);
+		Set Global Variable(Q, 0.100);
+		Abort;
+		Set Global Variable(Q, 1);
+	}
+}
+
+rule("editor 2 and ability 1 - switch to up/down edit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 2;
+		Is Button Held(Event Player, Ability 1) == True;
+	}
+
+	actions
+	{
+		Wait(0.250, Ignore Condition);
+		Loop If Condition Is True;
+		Set Global Variable(E, 3);
+	}
+}
+
+rule("editor 3 and ability 1 - switch to left/right edit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(E) == 3;
+		Is Button Held(Event Player, Ability 1) == True;
+	}
+
+	actions
+	{
+		Wait(0.250, Ignore Condition);
+		Loop If Condition Is True;
+		Set Global Variable(E, 1);
+	}
+}
+
+rule("update gather draw positions")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	actions
+	{
+		Set Global Variable(R, Value In Array(Global Variable(C), 0));
+		Set Global Variable(A, Value In Array(Global Variable(C), 1));
+		Set Global Variable(A, Multiply(Direction From Angles(Add(Value In Array(Global Variable(C), 3), 90), 0), Global Variable(A)));
+		Set Global Variable(B, Value In Array(Global Variable(C), 2));
+		Set Global Variable(B, Multiply(Direction From Angles(Value In Array(Global Variable(C), 3), 0), Global Variable(B)));
+		Set Global Variable(S, Add(Global Variable(R), Add(Multiply(Global Variable(A), 1), Multiply(Global Variable(B), 1))));
+		Set Global Variable(T, Add(Global Variable(R), Add(Multiply(Global Variable(A), 1), Multiply(Global Variable(B), -1.000))));
+		Set Global Variable(U, Add(Global Variable(R), Add(Multiply(Global Variable(A), -1.000), Multiply(Global Variable(B), 1))));
+		Set Global Variable(V, Add(Global Variable(R), Add(Multiply(Global Variable(A), -1.000), Multiply(Global Variable(B), -1.000))));
+		Wait(0.250, Ignore Condition);
+		Loop;
+	}
+}
+
+rule("State 5 - create world effects part 2")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 5;
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Orb, Purple, Value In Array(Global Variable(C), 4), 0.100, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Ring, Green, Value In Array(Global Variable(C), 6), 1.500, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Ring, Red, Value In Array(Global Variable(C), 7), 1.500, Visible To Position and Radius);
+		Set Global Variable(Z, 6);
+	}
+}
+
+rule("State 10  and ult - go to width edit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 10;
+		Is Button Held(Event Player, Ultimate) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(E, 4);
+		Set Global Variable(Y, 11);
+		Set Global Variable(Z, 91);
+	}
+}
+
+rule("State 11  and ult - go to length edit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 11;
+		Is Button Held(Event Player, Ultimate) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(E, 4);
+		Set Global Variable(Y, 12);
+		Set Global Variable(Z, 91);
+	}
+}
+
+rule("State 12  and ult - go to angle edit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 12;
+		Is Button Held(Event Player, Ultimate) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(E, 5);
+		Set Global Variable(Y, 13);
+		Set Global Variable(Z, 91);
+	}
+}
+
+rule("State 13  and ult - go to leaderboard position edit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 13;
+		Is Button Held(Event Player, Ultimate) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(E, 1);
+		Set Global Variable(Y, 14);
+		Set Global Variable(Z, 91);
+	}
+}
+
+rule("State 14  and ult - go to leaderboard scale edit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 14;
+		Is Button Held(Event Player, Ultimate) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(E, 4);
+		Set Global Variable(Y, 15);
+		Set Global Variable(Z, 91);
+	}
+}
+
+rule("State 15  and ult - go to options position edit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 15;
+		Is Button Held(Event Player, Ultimate) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(E, 1);
+		Set Global Variable(Y, 16);
+		Set Global Variable(Z, 91);
+	}
+}
+
+rule("State 16  and ult - go to operator position edit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 16;
+		Is Button Held(Event Player, Ultimate) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(E, 1);
+		Set Global Variable(Y, 17);
+		Set Global Variable(Z, 91);
+	}
+}
+
+rule("State 17  and ult - go to gather position edit")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 17;
+		Is Button Held(Event Player, Ultimate) == True;
+	}
+
+	actions
+	{
+		Set Global Variable(E, 1);
+		Set Global Variable(Y, 10);
+		Set Global Variable(Z, 91);
+	}
+}
+
+rule("crouch - text redraw")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Crouch) == True;
+	}
+
+	actions
+	{
+		Destroy All In-World Text;
+		Wait(0.250, Ignore Condition);
+		Set Global Variable(X, 1);
+	}
+}
+
+rule("text draw 1 - Leaderboard set up part 1")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(X) == 1;
+	}
+
+	actions
+	{
+		Set Global Variable(J, Value In Array(Global Variable(C), 4));
+		Set Global Variable(I, Value In Array(Global Variable(C), 5));
+		Set Global Variable(F, Multiply(0.800, Global Variable(I)));
+		Set Global Variable(G, Multiply(0.640, Global Variable(I)));
+		Set Global Variable(H, Multiply(1.800, Global Variable(I)));
+		Create In-World Text(All Players(All Teams), String("High Scores", Null, Null, Null), Global Variable(J), Multiply(4,
+			Global Variable(I)), Clip Against Surfaces, Visible To and String);
+		Modify Global Variable(J, Add, Multiply(Down, Global Variable(F)));
+		Create In-World Text(All Players(All Teams), String("----------", Null, Null, Null), Global Variable(J), Multiply(3.010,
+			Global Variable(I)), Clip Against Surfaces, Visible To and String);
+		Modify Global Variable(J, Add, Multiply(Down, Global Variable(F)));
+		Set Global Variable(X, 2);
+	}
+}
+
+rule("text draw 2 - Leaderboard set up part 2")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(X) == 2;
+	}
+
+	actions
+	{
+		Create In-World Text(All Players(All Teams), String("{0} - {1}", String("Participant", Null, Null, Null), String("{0} sec", 999,
+			Null, Null), Null), Global Variable(J), Global Variable(H), Clip Against Surfaces, String);
+		Modify Global Variable(J, Add, Multiply(Down, Global Variable(G)));
+		Create In-World Text(All Players(All Teams), String("{0} - {1}", String("Participant", Null, Null, Null), String("{0} sec", 999,
+			Null, Null), Null), Global Variable(J), Global Variable(H), Clip Against Surfaces, String);
+		Modify Global Variable(J, Add, Multiply(Down, Global Variable(G)));
+		Create In-World Text(All Players(All Teams), String("{0} - {1}", String("Participant", Null, Null, Null), String("{0} sec", 999,
+			Null, Null), Null), Global Variable(J), Global Variable(H), Clip Against Surfaces, String);
+		Modify Global Variable(J, Add, Multiply(Down, Global Variable(G)));
+		Create In-World Text(All Players(All Teams), String("{0} - {1}", String("Participant", Null, Null, Null), String("{0} sec", 999,
+			Null, Null), Null), Global Variable(J), Global Variable(H), Clip Against Surfaces, Visible To and String);
+		Modify Global Variable(J, Add, Multiply(Down, Global Variable(G)));
+		Create In-World Text(All Players(All Teams), String("{0} - {1}", String("Participant", Null, Null, Null), String("{0} sec", 999,
+			Null, Null), Null), Global Variable(J), Global Variable(H), Clip Against Surfaces, Visible To and String);
+		Set Global Variable(X, 3);
+	}
+}
+
+rule("text draw 3 - options and operator")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(X) == 3;
+	}
+
+	actions
+	{
+		Create In-World Text(All Players(All Teams), String("Optimize", Null, Null, Null), Add(Value In Array(Global Variable(C), 6),
+			Multiply(Up, 2.500)), 3, Clip Against Surfaces, Visible To and String);
+		Create In-World Text(All Players(All Teams), String("Moderate", Null, Null, Null), Add(Value In Array(Global Variable(C), 7),
+			Multiply(Up, 2.500)), 3, Clip Against Surfaces, Visible To and String);
+		Set Global Variable(X, 4);
+	}
+}

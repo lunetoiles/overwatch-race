@@ -49,27 +49,27 @@ done much testing. If you encounter a bug making a map for another character, pl
 
 ### Maps
 
-    Hanamura (v1.1.1): G92H5
-    King's Row (v1.1.1): GVGPZ
-    Eichenwalde (v1.1): C2NG9
-    Ilios (v1.1):  HQHW8
-    Junkertown (v1.1.1): TYCXV
-    Busan (v1.1.1, Lucio): JKHHJ
+    Hanamura (v1.1.1): VR5YH
+    King's Row (v1.1.1): ZJ9SF
+    Eichenwalde (v1.1): 7ZJ0T
+    Ilios (v1.1):  P3TP7
+    Junkertown (v1.1.1): 4EN0P
+    Busan (v1.1.1, Lucio): 9SDSC
     
 ### Community Maps
 
-    Doomfist on Route 66 by ShinySunlight (v1.0.3): 9RX7B
+    Doomfist on Route 66 by ShinySunlight (v1.0.3): 6MGJC
 
 ### Tools
 
-    Map maker v1.0: CB621
-    Gather room editor: KS8BF
-    Map template (v1.0.3): SJSB9
+    Map maker v1.0: A82RN
+    Gather room editor: F0SQY
+    Map template (v1.0.3): ZSRG9
 
 ### Early development versions:
 
     V0.1 - GEW3Z
-    V0.4 - 5VZD2
+    V0.4 - 5VZD2 +
     V0.41 - 5W6AG
     V0.5 - 04CE8
     V0.7 - Test map - YJ9E6

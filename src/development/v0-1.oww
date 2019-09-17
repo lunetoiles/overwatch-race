@@ -1,0 +1,991 @@
+rule("Rebuild Leaderboard")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Y) == True;
+	}
+
+	actions
+	{
+		Wait(5, Ignore Condition);
+		Set Global Variable(D, Filtered Array(All Players(All Teams), Compare(Player Variable(Current Array Element, W), <, 999)));
+		Set Global Variable(D, Filtered Array(Global Variable(D), Compare(Player Variable(Current Array Element, W), !=, 0)));
+		Set Global Variable(C, Sorted Array(Global Variable(D), Player Variable(Current Array Element, W)));
+		Loop;
+	}
+}
+
+rule("ultimate pressed - quick reset")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Ultimate) == True;
+		Player Variable(Event Player, Z) >= 30;
+		Player Variable(Event Player, Z) <= 49;
+	}
+
+	actions
+	{
+		Kill(Event Player, Null);
+	}
+}
+
+rule("Make players phase")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	actions
+	{
+		Set Status(Event Player, Null, Phased Out, 600);
+		Wait(599, Ignore Condition);
+		Loop;
+	}
+}
+
+rule("Player killed event - Reset PLAYER")
+{
+	event
+	{
+		Player Died;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(Y) == True;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, Z, 90);
+	}
+}
+
+rule("Global state 0 - checkpoint position creation")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 0;
+	}
+
+	actions
+	{
+		Set Global Variable(A, Empty Array);
+		Modify Global Variable(A, Append To Array, Vector(10.810, 6.080, -74.830));
+		Modify Global Variable(A, Append To Array, Vector(4.340, 7.710, -52.820));
+		Modify Global Variable(A, Append To Array, Vector(-8.910, 3.189, -17.420));
+		Modify Global Variable(A, Append To Array, Vector(-50.540, 18.529, -30.130));
+		Modify Global Variable(A, Append To Array, Vector(-37.490, 14.939, -66.780));
+		Modify Global Variable(A, Append To Array, Vector(-31.130, 7.160, -100.160));
+		Modify Global Variable(A, Append To Array, Vector(-30.181, 18.729, -98.641));
+		Modify Global Variable(A, Append To Array, Vector(-31.130, 7.160, -100.160));
+		Modify Global Variable(A, Append To Array, Vector(-67.000, 7.430, -98.521));
+		Modify Global Variable(A, Append To Array, Vector(-67.050, 8.410, -118.391));
+		Modify Global Variable(A, Append To Array, Vector(-66.620, 6.040, -138.540));
+		Modify Global Variable(A, Append To Array, Vector(-96.230, 6.290, -138.540));
+		Modify Global Variable(A, Append To Array, Vector(-88.050, 10.359, -99.521));
+		Set Global Variable(Z, 1);
+	}
+}
+
+rule("Global state 1 - checkpoint size creation")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 1;
+	}
+
+	actions
+	{
+		Set Global Variable(B, Empty Array);
+		Modify Global Variable(B, Append To Array, 5.390);
+		Modify Global Variable(B, Append To Array, 4.100);
+		Modify Global Variable(B, Append To Array, 5.390);
+		Modify Global Variable(B, Append To Array, 5.490);
+		Modify Global Variable(B, Append To Array, 6.390);
+		Modify Global Variable(B, Append To Array, 4.950);
+		Modify Global Variable(B, Append To Array, 5.390);
+		Modify Global Variable(B, Append To Array, 4.500);
+		Modify Global Variable(B, Append To Array, 3.600);
+		Modify Global Variable(B, Append To Array, 2.600);
+		Modify Global Variable(B, Append To Array, 5.590);
+		Modify Global Variable(B, Append To Array, 5.590);
+		Modify Global Variable(B, Append To Array, 8.430);
+		Set Global Variable(Z, 2);
+	}
+}
+
+rule("Global state 2 - spawn config")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 2;
+	}
+
+	actions
+	{
+		Set Global Variable(X, Empty Array);
+		Modify Global Variable(X, Append To Array, Vector(60.490, 10.729, -79.400));
+		Modify Global Variable(X, Append To Array, 8);
+		Modify Global Variable(X, Append To Array, Vector(38.590, 8.990, -53.370));
+		Modify Global Variable(X, Append To Array, Vector(-0.330, -0.040, -0.940));
+		Set Global Variable(Z, 3);
+	}
+}
+
+rule("Global state 3 - misc config")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 3;
+	}
+
+	actions
+	{
+		Start Forcing Spawn Room(Team 1, 0);
+		Start Forcing Spawn Room(Team 2, 0);
+		Set Global Variable(K, Empty Array);
+		Modify Global Variable(K, Append To Array, Vector(63.430, 15.430, -83.440));
+		Modify Global Variable(K, Append To Array, 1);
+		Modify Global Variable(K, Append To Array, Team 1);
+		Set Global Variable(Z, 10);
+	}
+}
+
+rule("Global State 10 - Game set up")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 10;
+	}
+
+	actions
+	{
+		Set Global Variable(C, Empty Array);
+		Set Global Variable(W, 999);
+		Create HUD Text(Filtered Array(All Players(All Teams), And(Compare(Player Variable(Current Array Element, Z), ==, 20), Compare(
+			Speed Of(Current Array Element), >, 2))), String("{0}!", String("Stop", Null, Null, Null), Null, Null), Null, Null, Top, 97,
+			Red, White, White, Visible To and String);
+		Create HUD Text(Filtered Array(All Players(All Teams), And(Compare(Player Variable(Current Array Element, Z), ==, 20), Compare(
+			Speed Of(Current Array Element), <=, 2))), String("{0} -> {1}", String("Use Ability 1", Null, Null, Null), String("Start",
+			Null, Null, Null), Null), Null, Null, Top, 98, Blue, White, White, Visible To and String);
+		Create HUD Text(Filtered Array(All Players(All Teams), Compare(Player Variable(Current Array Element, X), >, Add(Player Variable(
+			Current Array Element, W), 15))), String("{0} = {1}", String("Use Ultimate Ability", Null, Null, Null), String("Try Again",
+			Null, Null, Null), Null), Null, Null, Top, 99, Red, White, White, Visible To and String);
+		Pause Match Time;
+		Set Match Time(671);
+		Set Global Variable(Y, True);
+		Set Global Variable(Z, 20);
+	}
+}
+
+rule("Global state 20 - Leaderboard set up part 1")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 20;
+	}
+
+	actions
+	{
+		Set Global Variable(E, Value In Array(Global Variable(K), 0));
+		Set Global Variable(F, Multiply(0.800, Value In Array(Global Variable(K), 1)));
+		Set Global Variable(G, Multiply(0.640, Value In Array(Global Variable(K), 1)));
+		Set Global Variable(H, Multiply(1.800, Value In Array(Global Variable(K), 1)));
+		Create In-World Text(All Players(All Teams), String("Leaders", Null, Null, Null), Global Variable(E), Multiply(4, Value In Array(
+			Global Variable(K), 1)), Clip Against Surfaces, Visible To and String);
+		Modify Global Variable(E, Add, Multiply(Down, Global Variable(F)));
+		Create In-World Text(All Players(All Teams), String("----------", Null, Null, Null), Global Variable(E), Multiply(3.010,
+			Value In Array(Global Variable(K), 1)), Clip Against Surfaces, Visible To and String);
+		Modify Global Variable(E, Add, Multiply(Down, Global Variable(F)));
+		Set Global Variable(Z, 21);
+	}
+}
+
+rule("Global state 21 - Leaderboard set up part 2")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Global Variable(Z) == 21;
+	}
+
+	actions
+	{
+		Create In-World Text(Filtered Array(All Players(All Teams), Compare(Player Variable(Value In Array(Global Variable(C), 0), W), !=,
+			0)), String("{0} - {1}", Value In Array(Global Variable(C), 0), String("{0} sec", Player Variable(Value In Array(
+			Global Variable(C), 0), W), Null, Null), Null), Global Variable(E), Global Variable(H), Clip Against Surfaces,
+			Visible To and String);
+		Modify Global Variable(E, Add, Multiply(Down, Global Variable(G)));
+		Create In-World Text(Filtered Array(All Players(All Teams), Compare(Player Variable(Value In Array(Global Variable(C), 1), W), !=,
+			0)), String("{0} - {1}", Value In Array(Global Variable(C), 1), String("{0} sec", Player Variable(Value In Array(
+			Global Variable(C), 1), W), Null, Null), Null), Global Variable(E), Global Variable(H), Clip Against Surfaces,
+			Visible To and String);
+		Modify Global Variable(E, Add, Multiply(Down, Global Variable(G)));
+		Create In-World Text(Filtered Array(All Players(All Teams), Compare(Player Variable(Value In Array(Global Variable(C), 2), W), !=,
+			0)), String("{0} - {1}", Value In Array(Global Variable(C), 2), String("{0} sec", Player Variable(Value In Array(
+			Global Variable(C), 2), W), Null, Null), Null), Global Variable(E), Global Variable(H), Clip Against Surfaces,
+			Visible To and String);
+		Modify Global Variable(E, Add, Multiply(Down, Global Variable(G)));
+		Create In-World Text(Filtered Array(All Players(All Teams), Compare(Player Variable(Value In Array(Global Variable(C), 3), W), !=,
+			0)), String("{0} - {1}", Value In Array(Global Variable(C), 3), String("{0} sec", Player Variable(Value In Array(
+			Global Variable(C), 3), W), Null, Null), Null), Global Variable(E), Global Variable(H), Clip Against Surfaces,
+			Visible To and String);
+		Modify Global Variable(E, Add, Multiply(Down, Global Variable(G)));
+		Create In-World Text(Filtered Array(All Players(All Teams), Compare(Player Variable(Value In Array(Global Variable(C), 4), W), !=,
+			0)), String("{0} - {1}", Value In Array(Global Variable(C), 4), String("{0} sec", Player Variable(Value In Array(
+			Global Variable(C), 4), W), Null, Null), Null), Global Variable(E), Global Variable(H), Clip Against Surfaces,
+			Visible To and String);
+		Set Global Variable(Z, 99);
+	}
+}
+
+rule("Player state 0 and global initialization complete - Player initialization")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Global Variable(Y) == True;
+		Player Variable(Event Player, Z) == 0;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, W, 999);
+		Disable Built-In Game Mode Respawning(Event Player);
+		Set Respawn Max Time(Event Player, 99);
+		Start Forcing Throttle(Event Player, 0, 0, 0, 0, 0, 0);
+		Set Player Variable(Event Player, R, Empty Array);
+		Set Player Variable(Event Player, S, Empty Array);
+		Set Player Variable(Event Player, T, 0);
+		Chase Player Variable At Rate(Event Player, T, 10000, 1, None);
+		Set Player Variable(Event Player, Z, 1);
+	}
+}
+
+rule("Player state 1 - Player hud creation part 1")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 1;
+	}
+
+	actions
+	{
+		Create HUD Text(Event Player, String("{0} sec", Player Variable(Event Player, X), Null, Null), Null, Null, Top, 1, White, White,
+			White, Visible To and String);
+		Create HUD Text(Event Player, String("{0} {1}", Event Player, String("Records", Null, Null, Null), Null), Null, Null, Left, 0,
+			White, White, White, String);
+		Create HUD Text(Event Player, Null, Null, String("{0}: {1}", String("Attempts", Null, Null, Null), Player Variable(Event Player,
+			Q), Null), Left, 1, White, White, White, Visible To and String);
+		Create HUD Text(Event Player, Null, Null, String("{0}: {1}", String("{0} {1}", String("Game", Null, Null, Null), String("Time",
+			Null, Null, Null), Null), String("{0}:{1}", Round To Integer(Divide(Player Variable(Event Player, T), 60), Down), Modulo(
+			Round To Integer(Player Variable(Event Player, T), Down), 60), Null), Null), Left, 2, White, White, White,
+			Visible To and String);
+		Create HUD Text(Event Player, Null, Null, String("----------", Null, Null, Null), Left, 3, White, White, White,
+			Visible To and String);
+		Create HUD Text(Event Player, Null, Null, String("{0} {1}", String("Fastest", Null, Null, Null), String("Times", Null, Null, Null),
+			Null), Left, 4, White, White, White, Visible To and String);
+		Set Player Variable(Event Player, Z, 2);
+	}
+}
+
+rule("Player state 2 - Player hud creation part 2")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 2;
+	}
+
+	actions
+	{
+		Create HUD Text(Filtered Array(Event Player, Compare(Value In Array(Player Variable(Current Array Element, R), 0), !=, 0)), Null,
+			Null, String("{0}: {1}", 1, String("{0} sec", Value In Array(Player Variable(Event Player, R), 0), Null, Null), Null), Left, 5,
+			White, White, Yellow, Visible To and String);
+		Create HUD Text(Filtered Array(Event Player, Compare(Value In Array(Player Variable(Current Array Element, R), 1), !=, 0)), Null,
+			Null, String("{0}: {1}", 2, String("{0} sec", Value In Array(Player Variable(Event Player, R), 1), Null, Null), Null), Left, 6,
+			White, White, White, Visible To and String);
+		Create HUD Text(Filtered Array(Event Player, Compare(Value In Array(Player Variable(Current Array Element, R), 2), !=, 0)), Null,
+			Null, String("{0}: {1}", 3, String("{0} sec", Value In Array(Player Variable(Event Player, R), 2), Null, Null), Null), Left, 7,
+			White, White, White, Visible To and String);
+		Create HUD Text(Filtered Array(Event Player, Compare(Value In Array(Player Variable(Current Array Element, R), 3), !=, 0)), Null,
+			Null, String("{0}: {1}", 4, String("{0} sec", Value In Array(Player Variable(Event Player, R), 3), Null, Null), Null), Left, 8,
+			White, White, White, Visible To and String);
+		Create HUD Text(Filtered Array(Event Player, Compare(Value In Array(Player Variable(Current Array Element, R), 4), !=, 0)), Null,
+			Null, String("{0}: {1}", 5, String("{0} sec", Value In Array(Player Variable(Event Player, R), 4), Null, Null), Null), Left, 9,
+			White, White, White, Visible To and String);
+		Set Player Variable(Event Player, Z, 3);
+	}
+}
+
+rule("Player state 3 - Player hud creation part 3")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 3;
+	}
+
+	actions
+	{
+		Create HUD Text(Event Player, Null, Null, String("----------", Null, Null, Null), Left, 10, White, White, White,
+			Visible To and String);
+		Create HUD Text(Event Player, Null, Null, String("Times", Null, Null, Null), Left, 11, White, White, White, Visible To and String);
+		Create HUD Text(Filtered Array(Event Player, Compare(Value In Array(Player Variable(Current Array Element, S), 0), !=, 0)), Null,
+			Null, String("{0} sec", Value In Array(Player Variable(Event Player, S), 0), Null, Null), Left, 12, White, White, White,
+			Visible To and String);
+		Create HUD Text(Filtered Array(Event Player, Compare(Value In Array(Player Variable(Current Array Element, S), 1), !=, 0)), Null,
+			Null, String("{0} sec", Value In Array(Player Variable(Event Player, S), 1), Null, Null), Left, 13, White, White, White,
+			Visible To and String);
+		Create HUD Text(Filtered Array(Event Player, Compare(Value In Array(Player Variable(Current Array Element, S), 2), !=, 0)), Null,
+			Null, String("{0} sec", Value In Array(Player Variable(Event Player, S), 2), Null, Null), Left, 14, White, White, White,
+			Visible To and String);
+		Create HUD Text(Filtered Array(Event Player, Compare(Value In Array(Player Variable(Current Array Element, S), 3), !=, 0)), Null,
+			Null, String("{0} sec", Value In Array(Player Variable(Event Player, S), 3), Null, Null), Left, 15, White, White, White,
+			Visible To and String);
+		Create HUD Text(Filtered Array(Event Player, Compare(Value In Array(Player Variable(Current Array Element, S), 4), !=, 0)), Null,
+			Null, String("{0} sec", Value In Array(Player Variable(Event Player, S), 4), Null, Null), Left, 16, White, White, White,
+			Visible To and String);
+		Set Player Variable(Event Player, Z, 10);
+	}
+}
+
+rule("Player state 10 - course creation start")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 10;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, M, Empty Array);
+		Set Player Variable(Event Player, N, Array Slice(Global Variable(A), 1, 9999999.000));
+		Set Player Variable(Event Player, O, Array Slice(Global Variable(B), 1, 9999999.000));
+		Set Player Variable(Event Player, A, First Of(Global Variable(A)));
+		Set Player Variable(Event Player, B, First Of(Global Variable(B)));
+		Create Effect(Event Player, Sphere, Purple, Player Variable(Event Player, A), Player Variable(Event Player, B), None);
+		Modify Player Variable(Event Player, M, Append To Array, Last Created Entity);
+		Create Icon(Event Player, Player Variable(Event Player, A), Diamond, None, White, True);
+		Set Player Variable(Event Player, P, Last Created Entity);
+		Set Player Variable(Event Player, Z, 11);
+	}
+}
+
+rule("Player state 11 and count of (N) > 0 - Course creation loop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 11;
+		Count Of(Player Variable(Event Player, N)) > 0;
+	}
+
+	actions
+	{
+		Wait(0.250, Abort When False);
+		Set Player Variable(Event Player, A, First Of(Player Variable(Event Player, N)));
+		Set Player Variable(Event Player, B, First Of(Player Variable(Event Player, O)));
+		Create Effect(Event Player, Sphere, White, Player Variable(Event Player, A), Player Variable(Event Player, B), None);
+		Modify Player Variable(Event Player, M, Append To Array, Last Created Entity);
+		Set Player Variable(Event Player, N, Array Slice(Player Variable(Event Player, N), 1, 9999999.000));
+		Set Player Variable(Event Player, O, Array Slice(Player Variable(Event Player, O), 1, 9999999.000));
+		Loop If Condition Is True;
+	}
+}
+
+rule("Player state 11 and count of (N) == 0 - Course creation loop finish")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 11;
+		Count Of(Player Variable(Event Player, N)) == 0;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, N, Global Variable(A));
+		Set Player Variable(Event Player, O, Global Variable(B));
+		Set Player Variable(Event Player, Z, 12);
+	}
+}
+
+rule("Player state 12 - respawn")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 12;
+	}
+
+	actions
+	{
+		Respawn(Event Player);
+		Stop Forcing Throttle(Event Player);
+		Set Player Variable(Event Player, Z, 14);
+	}
+}
+
+rule("Player state 14 - respawn complete")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 14;
+		Is Alive(Event Player) == True;
+		Is In Spawn Room(Event Player) == True;
+	}
+
+	actions
+	{
+		Skip If(Compare(Team Of(Event Player), !=, Value In Array(Global Variable(K), 2)), 2);
+		Set Player Variable(Event Player, Z, 13);
+		Abort;
+		Set Player Variable(Event Player, Z, 20);
+	}
+}
+
+rule("Player state 13 - Teleport to spawn")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 13;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, A, Value In Array(Global Variable(X), 1));
+		Set Player Variable(Event Player, B, Random Real(Multiply(Player Variable(Event Player, A), -1.000), Player Variable(Event Player,
+			A)));
+		Set Player Variable(Event Player, C, Random Real(Multiply(Player Variable(Event Player, A), -1.000), Player Variable(Event Player,
+			A)));
+		Set Player Variable(Event Player, D, Add(Value In Array(Global Variable(X), 0), Vector(Player Variable(Event Player, B), 0,
+			Player Variable(Event Player, C))));
+		Teleport(Event Player, Player Variable(Event Player, D));
+		Set Player Variable(Event Player, Z, 20);
+	}
+}
+
+rule("Player state 20 and ability 1 pressed - Initialize race")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 20;
+		Is Button Held(Event Player, Ability 1) == True;
+		Speed Of(Event Player) <= 2;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, Z, 22);
+	}
+}
+
+rule("Player state 20 and left spawn - force to spawn")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 20;
+		Is In Spawn Room(Event Player) == False;
+		Compare(Team Of(Event Player), ==, Value In Array(Global Variable(K), 2)) == False;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, Z, 13);
+	}
+}
+
+rule("Player state 22 - spawn into race")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 22;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, X, 0);
+		Chase Player Variable At Rate(Event Player, X, 9999, 1, None);
+		Teleport(Event Player, Value In Array(Global Variable(X), 2));
+		Set Facing(Event Player, Value In Array(Global Variable(X), 3), To World);
+		Set Player Variable(Event Player, Z, 30);
+	}
+}
+
+rule("Player State 30 and Reach checkpoint")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 30;
+		Count Of(Player Variable(Event Player, N)) > 1;
+		Distance Between(Position Of(Event Player), Player Variable(Event Player, N)) < Player Variable(Event Player, O);
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, Z, 40);
+	}
+}
+
+rule("Player State 30 and reach goal")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 30;
+		Count Of(Player Variable(Event Player, N)) == 1;
+		Distance Between(Position Of(Event Player), Player Variable(Event Player, N)) < Player Variable(Event Player, O);
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, Z, 50);
+	}
+}
+
+rule("Player State 40 - Advance checkpoint")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 40;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, N, Array Slice(Player Variable(Event Player, N), 1, 9999999.000));
+		Set Player Variable(Event Player, O, Array Slice(Player Variable(Event Player, O), 1, 9999999.000));
+		Set Player Variable(Event Player, A, First Of(Player Variable(Event Player, M)));
+		Destroy Effect(Player Variable(Event Player, A));
+		Set Player Variable(Event Player, A, Value In Array(Player Variable(Event Player, M), 1));
+		Destroy Effect(Player Variable(Event Player, A));
+		Set Player Variable(Event Player, A, First Of(Player Variable(Event Player, N)));
+		Set Player Variable(Event Player, B, First Of(Player Variable(Event Player, O)));
+		Set Player Variable(Event Player, C, Empty Array);
+		Skip If(Compare(Count Of(Player Variable(Event Player, N)), >, 1), 3);
+		Create Effect(Event Player, Sphere, Yellow, Player Variable(Event Player, A), Player Variable(Event Player, B), None);
+		Modify Player Variable(Event Player, C, Append To Array, Last Created Entity);
+		Skip(2);
+		Create Effect(Event Player, Sphere, Purple, Player Variable(Event Player, A), Player Variable(Event Player, B), None);
+		Modify Player Variable(Event Player, C, Append To Array, Last Created Entity);
+		Set Player Variable(Event Player, M, Append To Array(Player Variable(Event Player, C), Array Slice(Player Variable(Event Player,
+			M), 2, 9999999.000)));
+		Set Player Variable(Event Player, Z, 41);
+	}
+}
+
+rule("Player State 41 - Create checkpoint world icon")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 41;
+	}
+
+	actions
+	{
+		Destroy Icon(Player Variable(Event Player, P));
+		Set Player Variable(Event Player, A, First Of(Player Variable(Event Player, N)));
+		Skip If(Compare(Count Of(Player Variable(Event Player, N)), >, 1), 3);
+		Create Icon(Event Player, Player Variable(Event Player, A), Exclamation Mark, None, White, True);
+		Set Player Variable(Event Player, P, Last Created Entity);
+		Skip(2);
+		Create Icon(Event Player, Player Variable(Event Player, A), Diamond, None, White, True);
+		Set Player Variable(Event Player, P, Last Created Entity);
+		Set Player Variable(Event Player, Z, 30);
+	}
+}
+
+rule("Player state 50 - Start finish race")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 50;
+	}
+
+	actions
+	{
+		Stop Chasing Player Variable(Event Player, X);
+		Skip If(Compare(Player Variable(Event Player, X), >=, Player Variable(Event Player, W)), 2);
+		Set Player Variable(Event Player, Z, 51);
+		Abort;
+		Small Message(Event Player, String("{0}: {1}", String("Time", Null, Null, Null), String("{0} sec", Player Variable(Event Player,
+			X), Null, Null), Null));
+		Set Player Variable(Event Player, Z, 60);
+	}
+}
+
+rule("Player state 51- Update personal best")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 51;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, W, Player Variable(Event Player, X));
+		Skip If(Compare(Player Variable(Event Player, W), >=, Global Variable(W)), 3);
+		Set Global Variable(W, Player Variable(Event Player, W));
+		Set Player Variable(Event Player, Z, 52);
+		Abort;
+		Small Message(All Players(All Teams), String("{0} - {1}", String("{0} {1}", Event Player, String("New Record", Null, Null, Null),
+			Null), String("{0} sec", Player Variable(Event Player, W), Null, Null), Null));
+		Set Player Variable(Event Player, Z, 60);
+	}
+}
+
+rule("Player state 52 - Update server best")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 52;
+	}
+
+	actions
+	{
+		Big Message(All Players(All Teams), String("{0}: {1}", String("New High Score", Null, Null, Null), String("{0} - {1}",
+			Event Player, String("{0} sec", Global Variable(W), Null, Null), Null), Null));
+		Set Player Variable(Event Player, Z, 60);
+	}
+}
+
+rule("Player state 60 - Update recent and best times lists")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 60;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, A, Array Slice(Player Variable(Event Player, S), 1, 4));
+		Set Player Variable(Event Player, S, Append To Array(Player Variable(Event Player, X), Player Variable(Event Player, S)));
+		Set Player Variable(Event Player, A, Append To Array(Player Variable(Event Player, R), Player Variable(Event Player, X)));
+		Set Player Variable(Event Player, B, Sorted Array(Player Variable(Event Player, A), Current Array Element));
+		Set Player Variable(Event Player, R, Array Slice(Player Variable(Event Player, B), 0, 5));
+		Set Player Variable(Event Player, Z, 70);
+	}
+}
+
+rule("Player state 70 - Finish race")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 70;
+	}
+
+	actions
+	{
+		Start Forcing Throttle(Event Player, 0, 0, 0, 0, 0, 0);
+		Set Player Variable(Event Player, Z, 90);
+	}
+}
+
+rule("Player state 90 - Start reset sequence")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 90;
+	}
+
+	actions
+	{
+		Stop Chasing Player Variable(Event Player, X);
+		Destroy Icon(Player Variable(Event Player, P));
+		Modify Player Variable(Event Player, Q, Add, 1);
+		Set Player Variable(Event Player, Z, 91);
+	}
+}
+
+rule("Player state 91 and count of(M) > 0 - Effect clean loop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 91;
+		Count Of(Player Variable(Event Player, M)) > 0;
+	}
+
+	actions
+	{
+		Wait(0.250, Abort When False);
+		Set Player Variable(Event Player, A, First Of(Player Variable(Event Player, M)));
+		Destroy Effect(Player Variable(Event Player, A));
+		Set Player Variable(Event Player, M, Array Slice(Player Variable(Event Player, M), 1, 9999999.000));
+		Loop If Condition Is True;
+	}
+}
+
+rule("Player state 91 and count of(M) == 0 - Finish effect clean loop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 91;
+		Count Of(Player Variable(Event Player, M)) == 0;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, Z, 92);
+	}
+}
+
+rule("Player state 92 - Final clean up (currently unused)")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Player Variable(Event Player, Z) == 92;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, Z, 10);
+	}
+}
+
+rule("debug")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Primary Fire) == True;
+	}
+
+	actions
+	{
+		Set Player Variable(Event Player, V, Facing Direction Of(Event Player));
+	}
+}
