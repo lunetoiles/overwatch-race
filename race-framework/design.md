@@ -34,7 +34,7 @@
     O - 
     P -
     Q - Debug
-    R - Enable/disable debug hud //currently non-functional
+    R - Enable/disable debug hud
     S - split index array (max size 4)
     T
     U
@@ -450,7 +450,7 @@ Rule type: Ongoing - Each Player, Team 2 players
         size: 1.5
     )
     Create effect(
-        visble to: filtered array(all players, current:M)
+        visble to: filtered array(host player, ce:M)
         type: ring
         color: red
         position: C[7]
@@ -464,7 +464,7 @@ Rule type: Ongoing - Each Player, Team 2 players
         clipping: clip against surfaces
     )
     Create in-world text(
-        visible to: filtered array(all players, current:M)
+        visble to: filtered array(host player, ce:M)
         Text: Moderate
         position: C[7] + (up * 3)
         scale: 2
@@ -539,7 +539,7 @@ Rule type: Ongoing - Each Player, Team 2 players
 **Global state 50 - Create static hud text**
 
     Create hud text(
-        header: "Records"
+        header: "STATS"
         Position: left
         Sort: -10
     )
@@ -549,23 +549,40 @@ Rule type: Ongoing - Each Player, Team 2 players
         sort: -1
     )
     Create hud text(
+        text: "Server uptime: {Total Time Elapsed}"
+        Position: left
+        sort: -1
+    )
+    Create hud text(
         visible to: filtered array(all players, cu:O[1] == false)
-        text: "fastest times"
+        text: "Best 5 times:"
         Postion: left
         sort -2
     )
     Create hud text(
         visible to: filtered array(all players, cu:O[1] == true)
-        text: "Checkpoint times
+        text: "Best Split / Current Split / Difference
         Postion: left
         sort -2
     )
     create hud text( //reset instructions
         visible to: All Players
-        text: "use ultimate ability = try again"
+        text: "Press ultimate(Q) to restart"
         location: top
         sort order: 9
     }
+    Create hud text(
+        visible to: filtered array(host player, gR == true)
+        text: Load: {server load} Avg: {server avg load} Max: {Sever max load}
+        location:right
+        sort order: 10
+    )
+    Create hud text(
+        visible to: filtered array(all players, ce:state >= 80 && ce:state <=89)
+        text: "left/right click to select option, press interact(F) to toggle"
+        location: top
+        sort order:11
+    )
     
     State <= 90
     
@@ -718,6 +735,7 @@ Rule type: ongoing - each player, team 2, slot 0
 
     cond: is button held(ep,interact) == true
     cond: is button held(ep,crouch) == true
+    cond: event player == host player
     
     wait(10, abort if false)
     small message("unlocking moderator")
@@ -740,7 +758,7 @@ Rule type: ongoing - each player, team 2, slot 0
     
 **player state 20 and in moderator spot - start moderator mode**
 
-    Cond: M == true
+    Cond: Event Player == Host Player
     Cond: distance between( position of(ep), gC[7]) < 1.5
     
     wait 1 abort
@@ -760,7 +778,7 @@ Rule type: ongoing - each player, team 2, slot 0
     Cond: gQ == false //don't show it in debug mode to avoide cluttering event window
     
     wait 5 abort
-    small message("Use ultimate ability = start race")
+    small message("Press Ultimate(Q) to start!")
     loop if true
     
 **Player state 21 - Wait for player to stop**
