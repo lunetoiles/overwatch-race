@@ -1,8 +1,13 @@
 # Lunetoiles' Overwatch race map framework
 
-**[Click here for workshop codes!](#codes)**
+## Codes
 
-**[Click here to submit a bug report, feature request, or map submission!](https://github.com/lunetoiles/overwatch-race/issues/new/choose)**
+    Hanamura (v1.2): VR5YH
+    King's Row (v1.2): ZJ9SF
+    Ilios (v1.2):  P3TP7
+    Junkertown (v1.2): 4EN0P
+
+## About
 
 This repository hosts a framework and associated tools for creating Overwatch multiplayer race maps created by Lunetoiles. It is inspired by Source engine race maps and designed to be very simple to create new maps for, have many customizeable options, and be easy to add features.
 
@@ -18,42 +23,28 @@ Press your ultimate button (defaults to Q). This will spawn you into the race.
 
 You can press ultimate (default Q) again during a run to restart.
 
-#### What is this optimize circle?
+#### What is this options circle?
 
-You can change options here. Optimize was the closest word in the allowed strings. Select options with primary/secondary fire (left and right click) and toggle options with interact (default F).
+You canchange a couple options for the game. Enter the circle and an interface will pop up. Press left and right click to select options and press Interact(F) to toggle them
 
 The options are:
-- Option 1: skip countdown
-- Option 2: mute sound effects
+- Option 1: skip countdown at start of race.
+- Option 2: Replace top 5 times with a speedrunning style split display. Checkpoints that start the next split will be blue instead of purple.
+- Option 3: When using the speedrun split display, compare agains the server best run instead of your personal best.
  
-For more detailed instructions, [please read the wiki](https://github.com/lunetoiles/overwatch-race/wiki/Player-options-(optimize)) (coming soon).
-
-#### I just started a map and I'm frozen and can't move, what is happening?
-
-This is the game capturing control points and moving the payload to open all the doors on the map and get the payload out of the way. Just wait a few moments and it will finish and the game will start.
-
-#### How do I run my own server?
-
-Just load one of the codes below, set yourself to team 2 slot 1 to make yourself the moderator, and start the match. For detailed instructions, [please read the wiki](https://github.com/lunetoiles/overwatch-race/wiki/How-to-host-a-server) (coming soon).
 
 #### How do I make my own map?
 
 You can create your own map by using the "Map maker" and "Gather room editor" codes below, and entering the data into the first 4 rules of the workshop mode. Detailed instructions are [on the wiki](https://github.com/lunetoiles/overwatch-race/wiki/How-to-make-a-new-map).
 
-#### Why are most of the maps for Wrecking Ball? Can I make maps for other characters?
+These instructions are unfortunately a bit out of date, but if you do want to make one please message me on Discord and I will update the instructions and help you with any questions you have.
 
-You should be able to make maps for any character! I just really like Wrecking Ball, so I haven't made ones for many others or
-done much testing. If you encounter a bug making a map for another character, please [submit a bug report](https://github.com/lunetoiles/overwatch-race/issues/new/choose) and i'll fix it as quickly as possible.
 
-## Codes
+## Other Codes
 
-### Maps
+### Old maps (possibly broken)
 
-    Hanamura (v1.1.1): VR5YH
-    King's Row (v1.1.1): ZJ9SF
     Eichenwalde (v1.1): 7ZJ0T
-    Ilios (v1.1):  P3TP7
-    Junkertown (v1.1.1): 4EN0P
     Busan (v1.1.1, Lucio): 9SDSC
     
 ### Community Maps
